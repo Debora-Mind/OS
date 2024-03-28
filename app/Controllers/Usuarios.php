@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\UsuarioModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use PHPUnit\Framework\MockObject\Stub\ReturnReference;
+use function PHPUnit\Framework\throwException;
 
 class Usuarios extends BaseController
 {
@@ -45,11 +46,13 @@ class Usuarios extends BaseController
         $data = [];
 
         foreach ($usuarios as $usuario) {
+            $nomeUsuario = esc($usuario->nome);
+
             $data[] = [
                 'imagem' => $usuario->imagem,
-                'nome' => esc($usuario->nome),
+                'nome' => anchor("usuarios/exibir/$usuario->id", $nomeUsuario, "title='Exibir usuário $nomeUsuario'"),
                 'email' => esc($usuario->email),
-                'ativo' => ($usuario->ativo == true ? 'Ativo' : '<span class="text-warning">Inativo</span>' ),
+                'ativo' => ($usuario->ativo == true ? '<i class="fa fa-unlock text-success"></i>&nbsp;Ativo' : '<i class="fa fa-lock text-warning"></i>&nbsp;Inativo' ),
             ];
         }
 
@@ -58,5 +61,26 @@ class Usuarios extends BaseController
         ];
 
         return $this->response->setJSON($retorno);
+    }
+
+    public function exibir(int $id = null)
+    {
+        $usuario = $this->buscaUsuarioOu404($id);
+
+        $data= [
+            'titulo' => 'Detalhando o usuário' . esc($usuario->nome),
+            'usuario' => $usuario
+        ];
+
+        return view('Usuarios/exibir', $data);
+    }
+
+    private function buscaUsuarioOu404(int $id = null)
+    {
+        if (!$id || !$usuario = $this->usuarioModel->withDeleted(true)->find($id)){
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o usuário $id");
+        }
+
+        return $usuario;
     }
 }
