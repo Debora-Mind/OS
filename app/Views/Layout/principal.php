@@ -213,6 +213,7 @@
           <!-- Conteúdo aqui  -->
          <section class="no-padding-top no-padding-bottom">
             <div class="container-fluid">
+                <?= $this->include('Layout/_mensagens') ?>
                 <?= $this->renderSection('conteudo') ?>
             </div>
         </section>

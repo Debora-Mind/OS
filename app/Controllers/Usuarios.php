@@ -2,11 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
 use App\Models\UsuarioModel;
-use CodeIgniter\HTTP\ResponseInterface;
-use PHPUnit\Framework\MockObject\Stub\ReturnReference;
-use function PHPUnit\Framework\throwException;
 
 class Usuarios extends BaseController
 {
@@ -73,6 +69,53 @@ class Usuarios extends BaseController
         ];
 
         return view('Usuarios/exibir', $data);
+    }
+    public function editar(int $id = null)
+    {
+        $usuario = $this->buscaUsuarioOu404($id);
+
+        $data= [
+            'titulo' => 'Editando o usuário' . esc($usuario->nome),
+            'usuario' => $usuario
+        ];
+
+        return view('Usuarios/editar', $data);
+    }
+
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $usuario = $this->buscaUsuarioOu404($post['id']);
+
+        if (empty($post['password'])){
+            unset($post['password']);
+            unset($post['password_confirmation']);
+        }
+
+        $usuario->fill($post);
+
+        if (!$usuario->hasChanged()) {
+            $retorno['info'] = 'Não há dados para serem atualizados';
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->usuarioModel->protect(false)->save($usuario)) {
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->usuarioModel->errors();
+
+        return $this->response->setJSON($retorno);
     }
 
     private function buscaUsuarioOu404(int $id = null)
