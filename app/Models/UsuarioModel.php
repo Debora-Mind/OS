@@ -35,7 +35,27 @@ class UsuarioModel extends Model
         'password'     => 'required|min_length[6]',
         'password_confirmation' => 'required_with[password]|matches[password]'
     ];
-    protected $validationMessages   = [];
+    protected $validationMessages   = [
+        'nome'         => [
+            'required'   => 'O campo Nome é obrigatório.',
+            'min_length' => 'O campo Nome precisa ter pelo menos 3 caractéres.',
+            'max_length' => 'O campo Nome não pode ser maior que 125 caractéres.',
+        ],
+        'email' => [
+            'required'      => 'O campo E-mail é obrigatório.',
+            'max_length'    => 'O campo E-mail não pode ser maior que 230 caractéres.',
+            'valid_email'   => 'O campo E-mail precisa conter um e-mail valido.',
+            'is_unique'     => 'O e-mail informado já está sendo utilizado.',
+        ],
+        'password' => [
+            'required'      => 'O campo Senha é obrigatório.',
+            'min_length'    => 'O campo Senha precisa ter pelo menos 6 caractéres.',
+        ],
+        'password_confirmation' => [
+            'required_with' => 'Por favor confirme a sua senha.',
+            'matches'       => 'As senhas não são iguais',
+        ],
+    ];
 
     // Callbacks
     protected $beforeInsert   = ['hashPassword'];
