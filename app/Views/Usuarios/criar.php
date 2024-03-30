@@ -25,8 +25,7 @@
                     <div class="form-group mt-5 mb-0">
 
                         <input id="btn-salvar" type="submit" class="btn btn-danger btn-sm mr-2" value="Salvar">
-
-                        <a href="<?= site_url("usuarios/exibir/$usuario->id") ?>" class="btn btn-secondary btn-sm ml-2">Voltar</a>
+                        <a href="<?= site_url("usuarios") ?>" class="btn btn-secondary btn-sm ml-2">Voltar</a>
                     </div>
 
                     <?= form_close() ?>
