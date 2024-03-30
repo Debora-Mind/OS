@@ -46,7 +46,7 @@
                 <div class="dropdown-menu">
                     <a href="<?= site_url("usuarios/editar/$usuario->id") ?>" class="dropdown-item">Editar usuário</a>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= site_url("usuarios/editar/$usuario->id") ?>" class="dropdown-item">Excluir usuário</a>
+                    <a href="<?= site_url("usuarios/excluir/$usuario->id") ?>" class="dropdown-item">Excluir usuário</a>
                 </div>
             </div>
             <a href="<?= site_url("usuarios") ?>" class="btn btn-secondary ml-2">Voltar</a>

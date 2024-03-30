@@ -247,6 +247,26 @@ class Usuarios extends BaseController
         }
     }
 
+    public function excluir(int $id = null)
+    {
+        $usuario = $this->buscaUsuarioOu404($id);
+
+        if ($this->request->getMethod() === 'post') {
+            $this->usuarioModel->delete($usuario->id);
+            $this->removeImagemDoFileSystem($usuario);
+
+            return redirect()->to(site_url("usuarios"))
+                ->with('sucesso', "Usuário $usuario->nome excluido com sucesso!");
+        }
+
+        $data= [
+            'titulo' => 'Excluindo o usuário' . esc($usuario->nome),
+            'usuario' => $usuario
+        ];
+
+        return view('Usuarios/excluir', $data);
+    }
+
     private function buscaUsuarioOu404(int $id = null)
     {
         if (!$id || !$usuario = $this->usuarioModel->withDeleted(true)->find($id)){
