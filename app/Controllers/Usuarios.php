@@ -252,8 +252,13 @@ class Usuarios extends BaseController
         $usuario = $this->buscaUsuarioOu404($id);
 
         if ($this->request->getMethod() === 'post') {
-            $this->usuarioModel->delete($usuario->id);
             $this->removeImagemDoFileSystem($usuario);
+
+            $usuario->imagem = null;
+            $usuario->ativo = false;
+            $this->usuarioModel->protect(false)->save($usuario);
+
+            $this->usuarioModel->delete($usuario->id);
 
             return redirect()->to(site_url("usuarios"))
                 ->with('sucesso', "Usuário $usuario->nome excluido com sucesso!");
