@@ -19,7 +19,7 @@
                     <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
                         <thead>
                             <tr>
-                                <th>Imagem</th>
+                                <th class="text-center" style="width: 12%">Imagem</th>
                                 <th>Nome</th>
                                 <th>E-mail</th>
                                 <th>Situação</th>
@@ -73,7 +73,11 @@
             "oLanguage": DATATABLE_PTBR,
             "ajax": "<?= site_url('usuarios/recuperausuarios') ?>",
             "columns": [
-                {"data": "imagem"},
+                {
+                    "orderable" : false,
+                    "data": "imagem",
+                    "class" : "text-center",
+                },
                 {"data": "nome"},
                 {"data": "email"},
                 {"data": "ativo"},

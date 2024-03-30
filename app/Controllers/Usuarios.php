@@ -44,10 +44,28 @@ class Usuarios extends BaseController
         $data = [];
 
         foreach ($usuarios as $usuario) {
+
+            if ($usuario->imagem != null) {
+                $imagem = [
+                    'src' => site_url("usuarios/imagem/$usuario->imagem"),
+                    'class' => 'rounded-circle img-fluid',
+                    'alt' => esc($usuario->nome),
+                    'width' => '50'
+                ];
+            }
+            else {
+                $imagem = [
+                    'src' => site_url("recursos/img/usuario_sem_imagem.png"),
+                    'class' => 'rounded-circle img-fluid',
+                    'alt' => 'Usuário sem imagem',
+                    'width' => '50'
+                ];
+            }
+
             $nomeUsuario = esc($usuario->nome);
 
             $data[] = [
-                'imagem' => $usuario->imagem,
+                'imagem' => $usuario->imagem = img($imagem),
                 'nome' => anchor("usuarios/exibir/$usuario->id", $nomeUsuario, "title='Exibir usuário $nomeUsuario'"),
                 'email' => esc($usuario->email),
                 'ativo' => ($usuario->ativo == true ? '<i class="fa fa-unlock text-success"></i>&nbsp;Ativo' : '<i class="fa fa-lock text-warning"></i>&nbsp;Inativo' ),
