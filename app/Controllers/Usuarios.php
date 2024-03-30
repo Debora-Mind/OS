@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\Usuario;
 use App\Models\UsuarioModel;
 
 class Usuarios extends BaseController
@@ -37,6 +38,7 @@ class Usuarios extends BaseController
         ];
 
         $usuarios = $this->usuarioModel->select($atributos)
+            ->orderBy('id', 'DESC')
             ->findAll();
 
         $data = [];
@@ -59,6 +61,47 @@ class Usuarios extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function criar()
+    {
+        $usuario = new Usuario();
+
+        $data= [
+            'titulo' => 'Criando novo usuário',
+            'usuario' => $usuario
+        ];
+
+        return view('Usuarios/criar', $data);
+    }
+
+    public function cadastrar()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $usuario = new Usuario($post);
+
+        if ($this->usuarioModel->protect(false)->insert($usuario)) {
+
+            $btnCriar = anchor("usuarios/criar", "Cadastrar novo usuário", ['class' => 'btn btn-danger mt-2']);
+
+            session()->setFlashdata('sucesso', "Dados salvos com sucesso! <br> $btnCriar");
+
+            $retorno['id'] = $this->usuarioModel->getInsertID();
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->usuarioModel->errors();
+
+        return $this->response->setJSON($retorno);
+    }
+
     public function exibir(int $id = null)
     {
         $usuario = $this->buscaUsuarioOu404($id);
@@ -70,6 +113,7 @@ class Usuarios extends BaseController
 
         return view('Usuarios/exibir', $data);
     }
+
     public function editar(int $id = null)
     {
         $usuario = $this->buscaUsuarioOu404($id);
