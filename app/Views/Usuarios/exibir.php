@@ -34,9 +34,12 @@
 
             <h5 class="card-title mt-2"><?= esc($usuario->nome) ?></h5>
             <p class="card-text"><?= esc($usuario->email) ?></p>
-            <p class="card-text"><?= $usuario->ativo == true ? 'Usuário ativo' : 'Usuário inativo'?></p>
             <p class="card-text">Criado <?= $usuario->created_at->humanize() ?></p>
             <p class="card-text">Atualizado <?= $usuario->updated_at->humanize() ?></p>
+            <?php if ($usuario->deleted_at): ?>
+                <p class="card-text">Excluído <?= $usuario->deleted_at->humanize() ?></p>
+            <?php endif; ?>
+            <p class="card-text"><?= $usuario->exibeSituacao() ?></p>
 
             <div class="btn-group">
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
@@ -46,7 +49,11 @@
                 <div class="dropdown-menu">
                     <a href="<?= site_url("usuarios/editar/$usuario->id") ?>" class="dropdown-item">Editar usuário</a>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= site_url("usuarios/excluir/$usuario->id") ?>" class="dropdown-item">Excluir usuário</a>
+                    <?php if ($usuario->deleted_at == null): ?>
+                        <a href="<?= site_url("usuarios/excluir/$usuario->id") ?>" class="dropdown-item">Excluir usuário</a>
+                    <?php else: ?>
+                        <a href="<?= site_url("usuarios/restaurarusuario/$usuario->id") ?>" class="dropdown-item">Restaurar usuário</a>
+                    <?php endif; ?>
                 </div>
             </div>
             <a href="<?= site_url("usuarios") ?>" class="btn btn-secondary ml-2">Voltar</a>

@@ -34,10 +34,12 @@ class Usuarios extends BaseController
             'nome',
             'email',
             'ativo',
-            'imagem'
+            'imagem',
+            'deleted_at'
         ];
 
         $usuarios = $this->usuarioModel->select($atributos)
+            ->withDeleted()
             ->orderBy('id', 'DESC')
             ->findAll();
 
@@ -68,7 +70,7 @@ class Usuarios extends BaseController
                 'imagem' => $usuario->imagem = img($imagem),
                 'nome' => anchor("usuarios/exibir/$usuario->id", $nomeUsuario, "title='Exibir usuário $nomeUsuario'"),
                 'email' => esc($usuario->email),
-                'ativo' => ($usuario->ativo == true ? '<i class="fa fa-unlock text-success"></i>&nbsp;Ativo' : '<i class="fa fa-lock text-warning"></i>&nbsp;Inativo' ),
+                'ativo' => $usuario->exibeSituacao(),
             ];
         }
 
@@ -251,6 +253,10 @@ class Usuarios extends BaseController
     {
         $usuario = $this->buscaUsuarioOu404($id);
 
+        if ($usuario->deleted_at != null) {
+            return redirect()->back()->with('info', 'Esse usuário já encontra-se excluído');
+        }
+
         if ($this->request->getMethod() === 'post') {
             $this->removeImagemDoFileSystem($usuario);
 
@@ -270,6 +276,21 @@ class Usuarios extends BaseController
         ];
 
         return view('Usuarios/excluir', $data);
+    }
+
+    public function restaurarUsuario(int $id = null)
+    {
+        $usuario = $this->buscaUsuarioOu404($id);
+
+        if ($usuario->deleted_at == null) {
+            return redirect()->back()->with('info', 'Apenas usuários excluídos podem ser recuperados');
+        }
+
+        $usuario->deleted_at = null;
+
+        $this->usuarioModel->protect(false)->save($usuario);
+
+        return redirect()->back()->with('sucesso', "Usuário $usuario->nome recuperado com sucesso!");
     }
 
     private function buscaUsuarioOu404(int $id = null)
