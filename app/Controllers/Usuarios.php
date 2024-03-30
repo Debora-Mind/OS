@@ -162,6 +162,73 @@ class Usuarios extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function editarImagem(int $id = null)
+    {
+        $usuario = $this->buscaUsuarioOu404($id);
+
+        $data= [
+            'titulo' => 'Alterando a imagem do usuário' . esc($usuario->nome),
+            'usuario' => $usuario
+        ];
+
+        return view('Usuarios/editar_imagem', $data);
+    }
+
+    public function upload()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $validacao = $this->validarImagem();
+
+        if (!$validacao->withRequest($this->request)->run()) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo';
+            $retorno['erros_model'] = $validacao->getErrors();
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $post = $this->request->getPost();
+
+        $usuario = $this->buscaUsuarioOu404($post['id']);
+
+        $imagem = $this->request->getFile('imagem');
+
+        list($largura, $altura) = getimagesize($imagem->getPathName());
+
+        if ($largura < "300" || $altura < "300") {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo';
+            $retorno['erros_model'] = ['dimensao' => 'A imagem não pode ser menor do que 300 x 300 pixels'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $caminhoImagem = $imagem->store('usuarios');
+        $caminhoImagem = WRITEPATH . "uploads/$caminhoImagem";
+
+        $this->manipulaImagem($caminhoImagem, $usuario);
+
+        $this->removeImagemDoFileSystem($usuario);
+
+        $usuario->imagem = $imagem->getName();
+
+        $this->usuarioModel->save($usuario);
+
+        session()->setFlashdata('sucesso', 'Imagem atualizada com sucesso');
+
+        return $this->response->setJSON($retorno);
+    }
+
+    public function imagem(string $imagem = null)
+    {
+        if ($imagem != null) {
+            $this->exibeArquivo('usuarios', $imagem);
+        }
+    }
+
     private function buscaUsuarioOu404(int $id = null)
     {
         if (!$id || !$usuario = $this->usuarioModel->withDeleted(true)->find($id)){
@@ -169,5 +236,64 @@ class Usuarios extends BaseController
         }
 
         return $usuario;
+    }
+
+    private function removeImagemDoFileSystem($usuario)
+    {
+        $imagemAntiga = $usuario->imagem;
+
+        if ($imagemAntiga != null) {
+            $caminhoImagem = WRITEPATH . "uploads/usuarios/$imagemAntiga";
+
+            if (is_file($caminhoImagem)) {
+                unlink($caminhoImagem);
+            }
+        }
+    }
+
+    private function manipulaImagem(string $caminhoImagem, $usuario): void
+    {
+        // Redimensionar imagem
+        service('image')
+            ->withFile($caminhoImagem)
+            ->fit(300, 300, 'center')
+            ->save($caminhoImagem);
+
+        // Adicionar marca d'água de texto
+        $anoAtual = date('Y');
+
+        // Adiciona marca d'água de texto
+        \Config\Services::image('imagick')
+            ->withFile($caminhoImagem)
+            ->text("Ordem $anoAtual - User-ID $usuario->id", [
+                'color' => '#fff',
+                'opacity' => 0.5,
+                'withShadow' => false,
+                'hAlign' => 'center',
+                'vAlign' => 'bottom',
+                'fontSize' => 10,
+            ])
+            ->save($caminhoImagem);
+    }
+
+    public function validarImagem(): ?object
+    {
+        $validacao = service('validation');
+
+        $regras = [
+            'imagem' => 'uploaded[imagem]|max_size[imagem,1024]|ext_in[imagem,png,jpg,jpeg,webp]',
+        ];
+
+        $mensagens = [
+            'imagem' => [
+                'uploaded' => 'Por favor escolha uma imagem',
+                'max_size' => 'Por favor selecione uma imagem de no máximo 1024',
+                'ext_in' => 'Por favor escolha uma imagem png, jpg, jpeg ou webp',
+
+            ]
+        ];
+
+        $validacao->setRules($regras, $mensagens);
+        return $validacao;
     }
 }

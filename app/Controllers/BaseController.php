@@ -55,4 +55,20 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
     }
+
+    protected function exibeArquivo(string $destino, string $arquivo)
+    {
+        $path = WRITEPATH . "uploads/$destino/$arquivo";
+
+        $fileInfo = new \finfo(FILEINFO_MIME);
+        $fileType = $fileInfo->file($path);
+        $fileSize = filesize($path);
+
+        header("Content-Type: $fileType");
+        header("Content-Length: $fileSize");
+
+        readfile($path);
+
+        exit();
+    }
 }

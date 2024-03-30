@@ -26,7 +26,7 @@
                 
                 <?php endif; ?>
 
-                <a href="<?= site_url("usuario/editarimagem/$usuario->id") ?>"
+                <a href="<?= site_url("usuarios/editarimagem/$usuario->id") ?>"
                    class="btn btn-outline-primary btn-sm mt-3">Alterar imagem</a>
             </div>
 
