@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateTableUsuarios extends Migration
+class CreateTableGrupos extends Migration
 {
     public function up()
     {
@@ -19,32 +19,11 @@ class CreateTableUsuarios extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => '128',
             ],
-            'email' => [
+            'descricao' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
             ],
-            'password_hash' => [
-                'type' => 'VARCHAR',
-                'constraint' => '255',
-            ],
-            'reset_hash' => [
-                'type' => 'VARCHAR',
-                'constraint' => '80',
-                'null' => true,
-                'default' => null
-            ],
-            'reset_expira_em' => [
-                'type' => 'DATETIME',
-                'null' => true,
-                'default' => null
-            ],
-            'imagem' => [
-                'type' => 'VARCHAR',
-                'constraint' => '255',
-                'null' => true,
-                'default' => null
-            ],
-            'ativo' => [
+            'tecnico' => [
                 'type' => 'BOOLEAN',
                 'null' => false
             ],
@@ -66,13 +45,13 @@ class CreateTableUsuarios extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addUniqueKey('email');
+        $this->forge->addUniqueKey('nome');
 
-        $this->forge->createTable('usuarios', true);
+        $this->forge->createTable('grupos', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('usuarios');
+        $this->forge->dropTable('grupos');
     }
 }
