@@ -12,15 +12,14 @@
         <div class="col-lg-12">
             <div class="block">
 
-                <a href="<?= site_url('usuarios/criar') ?>" class="btn btn-danger mb-4">Criar novo usuário</a>
+                <a href="<?= site_url('grupos/criar') ?>" class="btn btn-danger mb-4">Criar grupo de acesso</a>
 
                 <div class="table-responsive">
                     <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
                         <thead>
                             <tr>
-                                <th class="text-center" style="width: 12%">Imagem</th>
                                 <th>Nome</th>
-                                <th>E-mail</th>
+                                <th>Descrição</th>
                                 <th>Situação</th>
                             </tr>
                         </thead>
@@ -70,16 +69,11 @@
 
         $('#ajaxTable').DataTable( {
             "oLanguage": DATATABLE_PTBR,
-            "ajax": "<?= site_url('usuarios/recuperausuarios') ?>",
+            "ajax": "<?= site_url('grupos/recuperagrupos') ?>",
             "columns": [
-                {
-                    "orderable" : false,
-                    "data": "imagem",
-                    "class" : "text-center",
-                },
                 {"data": "nome"},
-                {"data": "email"},
-                {"data": "ativo"},
+                {"data": "descricao"},
+                {"data": "tecnico"},
             ],
             "deferRender": true,
             "processing": true,
