@@ -11,7 +11,7 @@
 <div class="row">
 
     <div class="col-lg-4">
-        <div class="block">
+        <div class="user-block block">
             <div class="text-center">
                 
                 <?php if ($usuario->imagem == null): ?>
@@ -39,7 +39,8 @@
             <?php if ($usuario->deleted_at): ?>
                 <p class="card-text">Excluído <?= $usuario->deleted_at->humanize() ?></p>
             <?php endif; ?>
-            <p class="card-text"><?= $usuario->exibeSituacao() ?></p>
+            <p class="contributions mt-0"><?= $usuario->exibeSituacao() ?></p>
+            <br>
 
             <div class="btn-group">
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
@@ -52,7 +53,7 @@
                     <?php if ($usuario->deleted_at == null): ?>
                         <a href="<?= site_url("usuarios/excluir/$usuario->id") ?>" class="dropdown-item">Excluir usuário</a>
                     <?php else: ?>
-                        <a href="<?= site_url("usuarios/restaurarusuario/$usuario->id") ?>" class="dropdown-item">Restaurar usuário</a>
+                        <a href="<?= site_url("usuarios/restaurar/$usuario->id") ?>" class="dropdown-item">Restaurar usuário</a>
                     <?php endif; ?>
                 </div>
             </div>

@@ -278,7 +278,7 @@ class Usuarios extends BaseController
         return view('Usuarios/excluir', $data);
     }
 
-    public function restaurarUsuario(int $id = null)
+    public function restaurar(int $id = null)
     {
         $usuario = $this->buscaUsuarioOu404($id);
 

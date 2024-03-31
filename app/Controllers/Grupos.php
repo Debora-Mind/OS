@@ -51,10 +51,7 @@ class Grupos extends BaseController
             $data[] = [
                 'nome' => anchor("grupos/exibir/$grupo->id", esc($grupo->nome), "title='Exibir grupo '" . esc($grupo->nome),),
                 'descricao' => esc($grupo->descricao),
-                'tecnico' => ($grupo->tecnico == true
-                    ? '<i class="fa fa-eye text-secondary"></i>&nbsp;Exibir grupo'
-                    : '<i class="fa fa-eye-slash text-danger"></i>&nbsp;Não exibir grupo'
-                ),
+                'tecnico' => $grupo->exibeSituacao(),
             ];
         }
 
@@ -63,6 +60,27 @@ class Grupos extends BaseController
         ];
 
         return $this->response->setJSON($retorno);
+    }
+
+    public function exibir(int $id = null)
+    {
+        $grupo = $this->buscaGrupoOu404($id);
+
+        $data= [
+            'titulo' => 'Detalhando o grupo de acesso' . esc($grupo->nome),
+            'grupo' => $grupo
+        ];
+
+        return view('Grupos/exibir', $data);
+    }
+
+    private function buscaGrupoOu404(int $id = null)
+    {
+        if (!$id || !$grupo = $this->grupoModel->withDeleted(true)->find($id)){
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o grupo de acesso $id");
+        }
+
+        return $grupo;
     }
 
 //
@@ -108,21 +126,11 @@ class Grupos extends BaseController
         return $this->response->setJSON($retorno);
     }
 
-    public function exibir(int $id = null)
-    {
-        $usuario = $this->buscaUsuarioOu404($id);
 
-        $data= [
-            'titulo' => 'Detalhando o usuário' . esc($usuario->nome),
-            'usuario' => $usuario
-        ];
-
-        return view('Usuarios/exibir', $data);
-    }
 
     public function editar(int $id = null)
     {
-        $usuario = $this->buscaUsuarioOu404($id);
+        $usuario = $this->buscaGrupoOu404($id);
 
         $data= [
             'titulo' => 'Editando o usuário' . esc($usuario->nome),
@@ -142,7 +150,7 @@ class Grupos extends BaseController
 
         $post = $this->request->getPost();
 
-        $usuario = $this->buscaUsuarioOu404($post['id']);
+        $usuario = $this->buscaGrupoOu404($post['id']);
 
         if (empty($post['password'])){
             unset($post['password']);
@@ -170,7 +178,7 @@ class Grupos extends BaseController
 
     public function editarImagem(int $id = null)
     {
-        $usuario = $this->buscaUsuarioOu404($id);
+        $usuario = $this->buscaGrupoOu404($id);
 
         $data= [
             'titulo' => 'Alterando a imagem do usuário' . esc($usuario->nome),
@@ -199,7 +207,7 @@ class Grupos extends BaseController
 
         $post = $this->request->getPost();
 
-        $usuario = $this->buscaUsuarioOu404($post['id']);
+        $usuario = $this->buscaGrupoOu404($post['id']);
 
         $imagem = $this->request->getFile('imagem');
 
@@ -237,7 +245,7 @@ class Grupos extends BaseController
 
     public function excluir(int $id = null)
     {
-        $usuario = $this->buscaUsuarioOu404($id);
+        $usuario = $this->buscaGrupoOu404($id);
 
         if ($usuario->deleted_at != null) {
             return redirect()->back()->with('info', 'Esse usuário já encontra-se excluído');
@@ -264,9 +272,9 @@ class Grupos extends BaseController
         return view('Usuarios/excluir', $data);
     }
 
-    public function restaurarUsuario(int $id = null)
+    public function restaurar(int $id = null)
     {
-        $usuario = $this->buscaUsuarioOu404($id);
+        $usuario = $this->buscaGrupoOu404($id);
 
         if ($usuario->deleted_at == null) {
             return redirect()->back()->with('info', 'Apenas usuários excluídos podem ser recuperados');
@@ -279,14 +287,7 @@ class Grupos extends BaseController
         return redirect()->back()->with('sucesso', "Usuário $usuario->nome recuperado com sucesso!");
     }
 
-    private function buscaUsuarioOu404(int $id = null)
-    {
-        if (!$id || !$usuario = $this->usuarioModel->withDeleted(true)->find($id)){
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o usuário $id");
-        }
 
-        return $usuario;
-    }
 
     private function removeImagemDoFileSystem($usuario)
     {
