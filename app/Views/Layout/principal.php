@@ -233,6 +233,15 @@
     <script src="<?= site_url('recursos/') ?>vendor/jquery/jquery.min.js"></script>
     <script src="<?= site_url('recursos/') ?>vendor/popper.js/umd/popper.min.js"> </script>
     <script src="<?= site_url('recursos/') ?>vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Popover bootstrap 4  -->
+    <script>
+        $(function () {
+            $('[data-toggle="popover"]').popover({
+                html: true,
+            })
+        })
+    </script>
+
     <!-- Não utilizado no curso -->
     <script src="<?= site_url('recursos/') ?>vendor/jquery.cookie/jquery.cookie.js"> </script>
     <script src="<?= site_url('recursos/') ?>vendor/chart.js/Chart.min.js"></script>

@@ -20,7 +20,13 @@
             <?php if ($grupo->deleted_at): ?>
                 <p class="card-text">Excluído <?= $grupo->deleted_at->humanize() ?></p>
             <?php endif; ?>
-            <p class="contributions mt-0"><?= $grupo->exibeSituacao() ?></p>
+            <p class="contributions mt-0"><?= $grupo->exibeSituacao() ?>
+                <a tabindex="0" role="button" data-toggle="popover"
+                   data-trigger="focus" title="Importante" style="text-decoration: none"
+                   data-content="Esse grupo <?= $grupo->tecnico ? 'será' : 'não será' ?> exibido como opção na hora de definir <b>Responsável técnico</b> pela ordem de serviço">
+                    &nbsp;&nbsp;<i class="fa fa-question-circle text-danger fa-lg"></i>
+                </a>
+            </p>
             <br>
 
             <div class="btn-group">
