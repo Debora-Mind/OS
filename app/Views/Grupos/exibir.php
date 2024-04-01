@@ -10,7 +10,18 @@
 
 <div class="row">
 
+    <?php if ($grupo->id <= 1): ?>
+        <div class="col-md-12">
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Importante</h4>
+                <p>O grupo <b><?= $grupo->nome ?></b> não pode ser editado ou excluído, pois é um grupo padrão do sistema.</p>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="col-lg-4">
+
+
         <div class="user-block block">
 
             <h5 class="card-title mt-2"><?= esc($grupo->nome) ?></h5>
@@ -29,7 +40,8 @@
             </p>
             <br>
 
-            <div class="btn-group">
+            <?php if ($grupo->id > 1): ?>
+                <div class="btn-group mr-2">
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                     Ações
@@ -44,7 +56,8 @@
                     <?php endif; ?>
                 </div>
             </div>
-            <a href="<?= site_url("grupos") ?>" class="btn btn-secondary ml-2">Voltar</a>
+            <?php endif; ?>
+            <a href="<?= site_url("grupos") ?>" class="btn btn-secondary mr-2">Voltar</a>
         </div>
 
     </div>
