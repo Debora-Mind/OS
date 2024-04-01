@@ -47,6 +47,6 @@ class GrupoSeeder extends Seeder
             ->protect(false)
             ->insertBatch($grupos);
 
-        echo "Grupos criados com suscesso.\n";
+        echo "Grupos criados com sucesso.\n";
     }
 }

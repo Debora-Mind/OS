@@ -9,5 +9,7 @@ class StartSeeder extends Seeder
     public function run()
     {
         $this->call('GrupoSeeder');
+        $this->call('PermissaoSeeder');
+        $this->call('PermissaoSeeder');
     }
 }

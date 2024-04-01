@@ -30,5 +30,8 @@ class UsuarioFakerSeeder extends Seeder
         $usuarioModel->skipValidation(true)
             ->protect(false)
             ->insertBatch($usuariosPush);
+
+    echo $criarQuantosUsuarios . "usuários criados com sucesso";
+
     }
 }
