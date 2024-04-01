@@ -74,6 +74,63 @@ class Grupos extends BaseController
         return view('Grupos/exibir', $data);
     }
 
+    public function editar(int $id = null)
+    {
+        $grupo = $this->buscaGrupoOu404($id);
+
+        if ($grupo->id <= 1) {
+            return redirect()->back()->with('atencao', 'O grupo ' . esc($grupo->nome) .
+                ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.' );
+        }
+
+        $data= [
+            'titulo' => 'Editando o grupo' . esc($grupo->nome),
+            'grupo' => $grupo
+        ];
+
+        return view('Grupos/editar', $data);
+    }
+
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $grupo = $this->buscaGrupoOu404($post['id']);
+
+        if ($grupo->id <= 1) {
+
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['grupo' => 'O grupo <b class="text-white">' . esc($grupo->nome) .
+                '</b> não pode ser editado ou excluído conforme descrito na exibição do mesmo.'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $grupo->fill($post);
+
+        if (!$grupo->hasChanged()) {
+            $retorno['info'] = 'Não há dados para serem atualizados';
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->grupoModel->protect(false)->save($grupo)) {
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->grupoModel->errors();
+
+        return $this->response->setJSON($retorno);
+    }
+
     private function buscaGrupoOu404(int $id = null)
     {
         if (!$id || !$grupo = $this->grupoModel->withDeleted(true)->find($id)){
@@ -87,11 +144,11 @@ class Grupos extends BaseController
 //
     public function criar()
     {
-        $usuario = new Usuario();
+        $grupo = new Usuario();
 
         $data= [
             'titulo' => 'Criando novo usuário',
-            'usuario' => $usuario
+            'usuario' => $grupo
         ];
 
         return view('Usuarios/criar', $data);
@@ -107,82 +164,35 @@ class Grupos extends BaseController
 
         $post = $this->request->getPost();
 
-        $usuario = new Usuario($post);
+        $grupo = new Usuario($post);
 
-        if ($this->usuarioModel->protect(false)->insert($usuario)) {
+        if ($this->grupoModel->protect(false)->insert($grupo)) {
 
             $btnCriar = anchor("usuarios/criar", "Cadastrar novo usuário", ['class' => 'btn btn-danger mt-2']);
 
             session()->setFlashdata('sucesso', "Dados salvos com sucesso! <br> $btnCriar");
 
-            $retorno['id'] = $this->usuarioModel->getInsertID();
+            $retorno['id'] = $this->grupoModel->getInsertID();
 
             return $this->response->setJSON($retorno);
         }
 
         $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
-        $retorno['erros_model'] = $this->usuarioModel->errors();
+        $retorno['erros_model'] = $this->grupoModel->errors();
 
         return $this->response->setJSON($retorno);
     }
 
 
 
-    public function editar(int $id = null)
-    {
-        $usuario = $this->buscaGrupoOu404($id);
-
-        $data= [
-            'titulo' => 'Editando o usuário' . esc($usuario->nome),
-            'usuario' => $usuario
-        ];
-
-        return view('Usuarios/editar', $data);
-    }
-
-    public function atualizar()
-    {
-        if (!$this->request->isAJAX()){
-            return redirect()->back();
-        }
-
-        $retorno['token'] = csrf_hash();
-
-        $post = $this->request->getPost();
-
-        $usuario = $this->buscaGrupoOu404($post['id']);
-
-        if (empty($post['password'])){
-            unset($post['password']);
-            unset($post['password_confirmation']);
-        }
-
-        $usuario->fill($post);
-
-        if (!$usuario->hasChanged()) {
-            $retorno['info'] = 'Não há dados para serem atualizados';
-            return $this->response->setJSON($retorno);
-        }
-
-        if ($this->usuarioModel->protect(false)->save($usuario)) {
-            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
-
-            return $this->response->setJSON($retorno);
-        }
-
-        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
-        $retorno['erros_model'] = $this->usuarioModel->errors();
-
-        return $this->response->setJSON($retorno);
-    }
 
     public function editarImagem(int $id = null)
     {
-        $usuario = $this->buscaGrupoOu404($id);
+        $grupo = $this->buscaGrupoOu404($id);
 
         $data= [
-            'titulo' => 'Alterando a imagem do usuário' . esc($usuario->nome),
-            'usuario' => $usuario
+            'titulo' => 'Alterando a imagem do usuário' . esc($grupo->nome),
+            'usuario' => $grupo
         ];
 
         return view('Usuarios/editar_imagem', $data);
@@ -207,7 +217,7 @@ class Grupos extends BaseController
 
         $post = $this->request->getPost();
 
-        $usuario = $this->buscaGrupoOu404($post['id']);
+        $grupo = $this->buscaGrupoOu404($post['id']);
 
         $imagem = $this->request->getFile('imagem');
 
@@ -223,13 +233,13 @@ class Grupos extends BaseController
         $caminhoImagem = $imagem->store('usuarios');
         $caminhoImagem = WRITEPATH . "uploads/$caminhoImagem";
 
-        $this->manipulaImagem($caminhoImagem, $usuario);
+        $this->manipulaImagem($caminhoImagem, $grupo);
 
-        $this->removeImagemDoFileSystem($usuario);
+        $this->removeImagemDoFileSystem($grupo);
 
-        $usuario->imagem = $imagem->getName();
+        $grupo->imagem = $imagem->getName();
 
-        $this->usuarioModel->save($usuario);
+        $this->grupoModel->save($grupo);
 
         session()->setFlashdata('sucesso', 'Imagem atualizada com sucesso');
 
@@ -245,28 +255,28 @@ class Grupos extends BaseController
 
     public function excluir(int $id = null)
     {
-        $usuario = $this->buscaGrupoOu404($id);
+        $grupo = $this->buscaGrupoOu404($id);
 
-        if ($usuario->deleted_at != null) {
+        if ($grupo->deleted_at != null) {
             return redirect()->back()->with('info', 'Esse usuário já encontra-se excluído');
         }
 
         if ($this->request->getMethod() === 'post') {
-            $this->removeImagemDoFileSystem($usuario);
+            $this->removeImagemDoFileSystem($grupo);
 
-            $usuario->imagem = null;
-            $usuario->ativo = false;
-            $this->usuarioModel->protect(false)->save($usuario);
+            $grupo->imagem = null;
+            $grupo->ativo = false;
+            $this->grupoModel->protect(false)->save($grupo);
 
-            $this->usuarioModel->delete($usuario->id);
+            $this->grupoModel->delete($grupo->id);
 
             return redirect()->to(site_url("usuarios"))
-                ->with('sucesso', "Usuário $usuario->nome excluido com sucesso!");
+                ->with('sucesso', "Usuário $grupo->nome excluido com sucesso!");
         }
 
         $data= [
-            'titulo' => 'Excluindo o usuário' . esc($usuario->nome),
-            'usuario' => $usuario
+            'titulo' => 'Excluindo o usuário' . esc($grupo->nome),
+            'usuario' => $grupo
         ];
 
         return view('Usuarios/excluir', $data);
@@ -274,24 +284,24 @@ class Grupos extends BaseController
 
     public function restaurar(int $id = null)
     {
-        $usuario = $this->buscaGrupoOu404($id);
+        $grupo = $this->buscaGrupoOu404($id);
 
-        if ($usuario->deleted_at == null) {
+        if ($grupo->deleted_at == null) {
             return redirect()->back()->with('info', 'Apenas usuários excluídos podem ser recuperados');
         }
 
-        $usuario->deleted_at = null;
+        $grupo->deleted_at = null;
 
-        $this->usuarioModel->protect(false)->save($usuario);
+        $this->grupoModel->protect(false)->save($grupo);
 
-        return redirect()->back()->with('sucesso', "Usuário $usuario->nome recuperado com sucesso!");
+        return redirect()->back()->with('sucesso', "Usuário $grupo->nome recuperado com sucesso!");
     }
 
 
 
-    private function removeImagemDoFileSystem($usuario)
+    private function removeImagemDoFileSystem($grupo)
     {
-        $imagemAntiga = $usuario->imagem;
+        $imagemAntiga = $grupo->imagem;
 
         if ($imagemAntiga != null) {
             $caminhoImagem = WRITEPATH . "uploads/usuarios/$imagemAntiga";
@@ -302,7 +312,7 @@ class Grupos extends BaseController
         }
     }
 
-    private function manipulaImagem(string $caminhoImagem, $usuario): void
+    private function manipulaImagem(string $caminhoImagem, $grupo): void
     {
         // Redimensionar imagem
         service('image')
@@ -316,7 +326,7 @@ class Grupos extends BaseController
         // Adiciona marca d'água de texto
         \Config\Services::image('imagick')
             ->withFile($caminhoImagem)
-            ->text("Ordem $anoAtual - User-ID $usuario->id", [
+            ->text("Ordem $anoAtual - User-ID $grupo->id", [
                 'color' => '#fff',
                 'opacity' => 0.5,
                 'withShadow' => false,
