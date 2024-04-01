@@ -267,7 +267,7 @@ class Usuarios extends BaseController
             $this->usuarioModel->delete($usuario->id);
 
             return redirect()->to(site_url("usuarios"))
-                ->with('sucesso', "Usuário $usuario->nome excluido com sucesso!");
+                ->with('sucesso', "Usuário $usuario->nome excluído com sucesso!");
         }
 
         $data= [
@@ -290,7 +290,7 @@ class Usuarios extends BaseController
 
         $this->usuarioModel->protect(false)->save($usuario);
 
-        return redirect()->back()->with('sucesso', "Usuário $usuario->nome recuperado com sucesso!");
+        return redirect()->back()->with('sucesso', "Usuário " . esc($usuario->nome) . " recuperado com sucesso!");
     }
 
     private function buscaUsuarioOu404(int $id = null)
