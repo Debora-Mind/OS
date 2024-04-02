@@ -88,7 +88,17 @@
                         <?php foreach ($grupo->permissoes as $permissao): ?>
                             <tr>
                                 <td><?= $permissao->nome ?></td>
-                                <td><a href="#" class="btn btn-sm brn-danger"></a>Excluir</td>
+                                <td>
+                                    <?php
+                                        $atributos = [
+                                            'onSubmit' => "return confirm('Tem certeza da exclusão da permissão?');"
+                                        ];
+                                    ?>
+                                    <?= form_open("grupos/removepermissao/$permissao->principal_id", $atributos) ?>
+
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button></td>
+
+                                    <?= form_close() ?>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>

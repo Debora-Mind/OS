@@ -238,8 +238,6 @@ class Grupos extends BaseController
             $grupo->pager = $this->grupoPermissaoModel->pager;
         }
 
-//        dd($grupo->pager);
-
         $data = [
             'titulo' => 'Gerenciando as permissões do grupo de acesso <b class="text-warning">' . esc($grupo->nome) . '</b>',
             'grupo' => $grupo
@@ -304,6 +302,19 @@ class Grupos extends BaseController
         session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
         return $this->response->setJSON($retorno);
 
+    }
+
+    public function removePermissao(int $principal_id = null)
+    {
+        if ($this->request->getMethod() === 'post') {
+
+            $this->grupoPermissaoModel->delete($principal_id);
+
+            return redirect()->back()
+                ->with('sucesso', "Permissão removida com sucesso!");
+        }
+
+        return redirect()->back();
     }
 
     private function buscaGrupoOu404(int $id = null)
