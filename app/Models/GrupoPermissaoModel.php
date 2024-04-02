@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class GrupoPermissaoModel extends Model
 {
     protected $table            = 'grupos_permissoes';
-    protected $returnType       = 'array';
+    protected $returnType       = 'object';
     protected $allowedFields    = ['grupo_id', 'permissao_id'];
 
     public function recuperaPermissoesDoGrupo(int $grupoId, int $quantidadePaginacao)

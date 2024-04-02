@@ -50,7 +50,7 @@
                     <select name="permissao_id[]" multiple class="selectize" id="">
                         <option value="">Escolha...</option>
                         <?php foreach ($permissoesDisponiveis as $permissao): ?>
-                            <option value="<?= $permissao->id ?>"><?= esc($permissao->nome) ?></option>
+                            <option value="<?= $permissao->id ?>" id="id"><?= esc($permissao->nome) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -87,14 +87,13 @@
                         <tbody>
                         <?php foreach ($grupo->permissoes as $permissao): ?>
                             <tr>
-                                <td><?= esc($permissao->nome) ?></td>
+                                <td><?= $permissao->nome ?></td>
                                 <td><a href="#" class="btn btn-sm brn-danger"></a>Excluir</td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
-
-                    <div class="mt-3 ml-1"><?= $grupo->pager->links ?></div>
+                    <div class="mt-3 ml-1"><?= $grupo->pager->links() ?></div>
                 </div>
             <?php endif; ?>
 
@@ -112,6 +111,55 @@
         $(".selectize").selectize({
             create: true,
             sortField: "text",
+            valueField: 'name',
+        })
+    })
+
+    $(document).ready(function () {
+        $("#form").on('submit', function (e){
+
+            e.preventDefault()
+
+            $.ajax({
+                type: 'POST',
+                url: '<?= site_url('grupos/salvarpermissoes') ?>',
+                data: new FormData(this),
+                dataType: 'json',
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend: function (){
+                    $('#response').html('')
+                    $('#btn-salvar').val('Por favor aguarde...')
+                },
+                success: function (response){
+                    $('#btn-salvar').val('Salvar').removeAttr('disabled')
+
+                    $('[name=csrf_ordem]').val(response.token);
+
+                    if (!response.erro) {
+                        window.location.href = "<?= site_url("grupos/exibir/$grupo->id"); ?>";
+                    }
+                    else {
+                        $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
+
+                        if (response.erros_model) {
+                            $.each(response.erros_model, function (key, value) {
+                                $("#response").append('<ul class="list-unstyled"><li class="text-danger">' + value + '</li></ul>')
+                            })
+                        }
+                    }
+                },
+                error: function (){
+                    alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
+                    $('#btn-salvar').val('Salvar').removeAttr('disabled')
+                }
+            })
+
+        });
+
+        $("#form").submit(function () {
+            $(this).find(":submit").attr('disabled', 'disabled')
         })
     })
 </script>

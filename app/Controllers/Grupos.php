@@ -238,6 +238,8 @@ class Grupos extends BaseController
             $grupo->pager = $this->grupoPermissaoModel->pager;
         }
 
+//        dd($grupo->pager);
+
         $data = [
             'titulo' => 'Gerenciando as permissões do grupo de acesso <b class="text-warning">' . esc($grupo->nome) . '</b>',
             'grupo' => $grupo
@@ -256,6 +258,52 @@ class Grupos extends BaseController
         }
 
         return view('Grupos/permissoes', $data);
+    }
+
+    public function salvarPermissoes()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $grupo = $this->buscaGrupoOu404($post['id']);
+
+        if ($grupo->id <= $this->quantidadeGruposPadroes) {
+
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['grupo' => 'O grupo <b class="text-white">' . esc($grupo->nome) .
+                '</b> não pode ser editado ou excluído conforme descrito na exibição do mesmo.'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $grupo->fill($post);
+
+        if (empty($post['permissao_id'])) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['permissao_id' => 'Escolha uma ou mais permissões para salvar'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $permissaoPush = [];
+
+        foreach ($post['permissao_id'] as $permissao){
+            $permissaoPush[] = [
+                'grupo_id' => $grupo->id,
+                'permissao_id' => $permissao
+            ];
+        }
+
+        $this->grupoPermissaoModel->insertBatch($permissaoPush);
+
+        session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+        return $this->response->setJSON($retorno);
+
     }
 
     private function buscaGrupoOu404(int $id = null)
