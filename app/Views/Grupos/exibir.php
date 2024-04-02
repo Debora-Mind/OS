@@ -10,9 +10,9 @@
 
 <div class="row">
 
-    <?php if ($grupo->id <= 1): ?>
+    <?php if ($grupo->id <= 2): ?>
         <div class="col-md-12">
-            <div class="alert alert-info" role="alert">
+            <div class="alert alert-info pb-0" role="alert">
                 <h4 class="alert-heading">Importante</h4>
                 <p>O grupo <b><?= $grupo->nome ?></b> não pode ser editado ou excluído, pois é um grupo padrão do sistema.</p>
             </div>
@@ -40,7 +40,7 @@
             </p>
             <br>
 
-            <?php if ($grupo->id > 1): ?>
+            <?php if ($grupo->id > 2): ?>
                 <div class="btn-group mr-2">
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">

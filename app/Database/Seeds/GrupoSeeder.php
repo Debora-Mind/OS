@@ -21,6 +21,13 @@ class GrupoSeeder extends Seeder
                 'updated_at' => $currentTimestamp,
                 ],
             [
+                'nome' => 'Clientes',
+                'descricao' => 'Esse grupo é destinado para atribuição de clientes pois os mesmos poderão logar no sistema para acessar as suas ordens de serviços.',
+                'tecnico' => false,
+                'created_at' => $currentTimestamp,
+                'updated_at' => $currentTimestamp,
+            ],
+            [
                 'nome' => 'Técnico',
                 'descricao' => 'Grupo para técnicos.',
                 'tecnico' => true,
@@ -34,13 +41,6 @@ class GrupoSeeder extends Seeder
                 'created_at' => $currentTimestamp,
                 'updated_at' => $currentTimestamp,
             ],
-            [
-                'nome' => 'Clientes',
-                'descricao' => 'Esse grupo é destinado para atribuição de clientes pois os mesmos poderão logar no sistema para acessar as suas ordens de serviços.',
-                'tecnico' => false,
-                'created_at' => $currentTimestamp,
-                'updated_at' => $currentTimestamp,
-            ]
         ];
 
         $grupoModel->skipValidation(true)

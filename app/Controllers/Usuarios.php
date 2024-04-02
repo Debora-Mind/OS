@@ -3,15 +3,23 @@
 namespace App\Controllers;
 
 use App\Entities\Usuario;
+use App\Models\GrupoModel;
+use App\Models\GrupoUsuarioModel;
 use App\Models\UsuarioModel;
 
 class Usuarios extends BaseController
 {
     private $usuarioModel;
+    private $grupoUsuarioModel;
+    private $grupoModel;
+    private $quantidadeGruposPorPagina = 5;
+    private $quantidadeGruposPadroes = 2;
 
     public function __construct()
     {
         $this->usuarioModel = new UsuarioModel();
+        $this->grupoUsuarioModel = new GrupoUsuarioModel();
+        $this->grupoModel = new GrupoModel();
     }
 
     public function index()
@@ -291,6 +299,43 @@ class Usuarios extends BaseController
         $this->usuarioModel->protect(false)->save($usuario);
 
         return redirect()->back()->with('sucesso', "Usuário " . esc($usuario->nome) . " recuperado com sucesso!");
+    }
+
+    public function grupos(int $id = null)
+    {
+        $usuario = $this->buscaUsuarioOu404($id);
+
+        $usuario->grupos = $this->grupoUsuarioModel
+            ->recuperaGruposDoUsuario($usuario->id, $this->quantidadeGruposPorPagina);
+        $usuario->pager = $this->grupoUsuarioModel->pager;
+
+        $data= [
+            'titulo' => 'Gerenciando os grupos de acesso do usuário ' . esc($usuario->nome),
+            'usuario' => $usuario
+        ];
+
+        // Quando o usuário for do grupo de clientes (id 2), retorna para view de exibição de usuários
+        if (in_array(2, array_column($usuario->grupos, 'grupo_id'))) {
+            return redirect()->to(site_url("usuarios/exibir/$usuario->"))
+                ->with('info', 'Esse usuário é um cliente, portando não é necessário atribuí-lo ou
+                 removê-lo de outros grupos de acesso');
+        }
+
+        if (!empty($usuario->grupos)) {
+            $gruposExistentes = array_column($usuario->grupos, 'grupo_id');
+
+            $data['gruposDisponiveis'] = $this->grupoModel
+                ->where('id !=', $this->quantidadeGruposPadroes)
+                ->whereNotIn('id', $gruposExistentes)
+                ->findAll();
+        }
+        else {
+            $data['gruposDisponiveis'] = $this->grupoModel
+                ->where('id !=', $this->quantidadeGruposPadroes)
+                ->findAll();
+        }
+
+        return view('Usuarios/grupos', $data);
     }
 
     private function buscaUsuarioOu404(int $id = null)

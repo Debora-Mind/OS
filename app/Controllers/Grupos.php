@@ -14,7 +14,7 @@ class Grupos extends BaseController
     private $grupoModel;
     private $grupoPermissaoModel;
     private $PermissaoModel;
-    private $quantidadeGruposPadroes = 1;
+    private $quantidadeGruposPadroes = 2;
     private $quantidadePermissoesPorPagina = 5;
 
     public function __construct()
