@@ -5,15 +5,23 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\GrupoModel;
 use App\Entities\Grupo;
+use App\Models\GrupoPermissaoModel;
+use App\Models\PermissaoModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Grupos extends BaseController
 {
     private $grupoModel;
+    private $grupoPermissaoModel;
+    private $PermissaoModel;
+    private $quantidadeGruposPadroes = 1;
+    private $quantidadePermissoesPorPagina = 5;
 
     public function __construct()
     {
         $this->grupoModel = new GrupoModel();
+        $this->grupoPermissaoModel = new GrupoPermissaoModel();
+        $this->PermissaoModel = new PermissaoModel();
     }
 
     public function index()
@@ -119,7 +127,7 @@ class Grupos extends BaseController
     {
         $grupo = $this->buscaGrupoOu404($id);
 
-        if ($grupo->id <= 1) {
+        if ($grupo->id <= $this->quantidadeGruposPadroes) {
             return redirect()->back()->with('atencao', 'O grupo ' . esc($grupo->nome) .
                 ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.' );
         }
@@ -144,7 +152,7 @@ class Grupos extends BaseController
 
         $grupo = $this->buscaGrupoOu404($post['id']);
 
-        if ($grupo->id <= 1) {
+        if ($grupo->id <= $this->quantidadeGruposPadroes) {
 
             $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
             $retorno['erros_model'] = ['grupo' => 'O grupo <b class="text-white">' . esc($grupo->nome) .
@@ -176,7 +184,7 @@ class Grupos extends BaseController
     {
         $grupo = $this->buscaGrupoOu404($id);
 
-        if ($grupo->id <= 1) {
+        if ($grupo->id <= $this->quantidadeGruposPadroes) {
             return redirect()->back()->with('atencao', 'O grupo ' . esc($grupo->nome) .
                 ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.' );
         }
@@ -216,6 +224,40 @@ class Grupos extends BaseController
         return redirect()->back()->with('sucesso', "Grupo " . esc($grupo->nome) . " recuperado com sucesso!");
     }
 
+    public function permissoes(int $id = null)
+    {
+        $grupo = $this->buscaGrupoOu404($id);
+
+        if ($grupo->id <= $this->quantidadeGruposPadroes) {
+            return redirect()->back()->with('info',
+                'Não é necessário atribuir ou remover permissões de acesso para o grupo ' . esc($grupo->nome) .
+                        ', pois esse grupo é padrão do sistema');
+        } else {
+            $grupo->permissoes = $this->grupoPermissaoModel
+                ->recuperaPermissoesDoGrupo($grupo->id, $this->quantidadePermissoesPorPagina);
+            $grupo->pager = $this->grupoPermissaoModel->pager;
+        }
+
+        $data = [
+            'titulo' => 'Gerenciando as permissões do grupo de acesso <b class="text-warning">' . esc($grupo->nome) . '</b>',
+            'grupo' => $grupo
+        ];
+
+        if (!empty($grupo->permissoes)) {
+            $permissoesExistentes = array_column($grupo->permissoes, 'permissao_id');
+
+            $data['permissoesDisponiveis'] = $this->PermissaoModel
+                ->whereNotIn('id', $permissoesExistentes)
+                ->findAll();
+        }
+        else {
+            $data['permissoesDisponiveis'] = $this->PermissaoModel
+                ->findAll();
+        }
+
+        return view('Grupos/permissoes', $data);
+    }
+
     private function buscaGrupoOu404(int $id = null)
     {
         if (!$id || !$grupo = $this->grupoModel->withDeleted(true)->find($id)){
@@ -224,13 +266,5 @@ class Grupos extends BaseController
 
         return $grupo;
     }
-
-//
-//
-
-
-
-
-
 
 }

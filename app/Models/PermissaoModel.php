@@ -7,6 +7,6 @@ use CodeIgniter\Model;
 class PermissaoModel extends Model
 {
     protected $table            = 'permissoes';
-    protected $returnType       = 'Object';
+    protected $returnType       = 'object';
     protected $allowedFields    = [];
 }

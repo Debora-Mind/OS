@@ -48,6 +48,7 @@
                 </button>
                 <div class="dropdown-menu">
                     <a href="<?= site_url("grupos/editar/$grupo->id") ?>" class="dropdown-item">Editar grupo de acesso</a>
+                    <a href="<?= site_url("grupos/permissoes/$grupo->id") ?>" class="dropdown-item">Gerenciar as permissões do grupo</a>
                     <div class="dropdown-divider"></div>
                     <?php if ($grupo->deleted_at == null): ?>
                         <a href="<?= site_url("grupos/excluir/$grupo->id") ?>" class="dropdown-item">Excluir grupo de acesso</a>
