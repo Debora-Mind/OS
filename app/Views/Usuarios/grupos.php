@@ -68,7 +68,7 @@
 
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-8">
         <div class="user-block block">
 
             <?php if (empty($usuario->grupos)): ?>
@@ -87,7 +87,7 @@
                         <?php foreach ($usuario->grupos as $info): ?>
                             <tr>
                                 <td><?= esc($info->nome) ?></td>
-                                <td><?= esc($info->descricao) ?></td>
+                                <td><?= ellipsize(esc($info->descricao), 50, .5) ?></td>
                                 <td>
                                     <?php
                                         $atributos = [
@@ -103,7 +103,7 @@
                         <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <div class="mt-3 ml-1"><?= $usuario->pager->links() ?></div>
+                    <div class="mt-3 ml-1 align-self-center"><?= $usuario->pager->links() ?></div>
                 </div>
             <?php endif; ?>
 
@@ -132,7 +132,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '<?= site_url('grupos/salvarpermissoes') ?>',
+                url: '<?= site_url('usuarios/salvargrupos') ?>',
                 data: new FormData(this),
                 dataType: 'json',
                 contentType: false,

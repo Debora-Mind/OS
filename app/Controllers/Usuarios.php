@@ -338,6 +338,44 @@ class Usuarios extends BaseController
         return view('Usuarios/grupos', $data);
     }
 
+    public function salvarGrupos()
+    {
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $usuario = $this->buscaUsuarioOu404($post['id']);
+
+        if (empty($post['grupo_id'])) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['grupo_id' => 'Escolha um ou mais grupos para salvar'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        // Quando o usuário for do grupo de clientes (id 2), não permite salvar
+        if (in_array(2, $post['grupo_id'])){
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['grupo_id' => 'O grupo de Clientes não pode ser atribuído de forma manual.'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $grupoPush = [];
+
+        foreach ($post['grupo_id'] as $grupo){
+            $grupoPush[] = [
+                'grupo_id' => $grupo,
+                'usuario_id' => $usuario->id
+            ];
+        }
+
+        $this->grupoUsuarioModel->insertBatch($grupoPush);
+
+        session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+        return $this->response->setJSON($retorno);
+    }
+
     private function buscaUsuarioOu404(int $id = null)
     {
         if (!$id || !$usuario = $this->usuarioModel->withDeleted(true)->find($id)){
