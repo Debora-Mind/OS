@@ -14,6 +14,8 @@ class Usuarios extends BaseController
     private $grupoModel;
     private $quantidadeGruposPorPagina = 5;
     private $quantidadeGruposPadroes = 2;
+    private $grupoAdministrador = 1;
+    private $grupoClientes = 2;
 
     public function __construct()
     {
@@ -315,11 +317,21 @@ class Usuarios extends BaseController
         ];
 
         // Quando o usuário for do grupo de clientes (id 2), retorna para view de exibição de usuários
-        if (in_array(2, array_column($usuario->grupos, 'grupo_id'))) {
+        if (in_array($this->grupoClientes, array_column($usuario->grupos, 'grupo_id'))) {
             return redirect()->to(site_url("usuarios/exibir/$usuario->"))
                 ->with('info', 'Esse usuário é um cliente, portando não é necessário atribuí-lo ou
                  removê-lo de outros grupos de acesso');
         }
+
+        // Verifica se o usuário está no grupo Administrador
+        if (in_array($this->grupoAdministrador, array_column($usuario->grupos, 'grupo_id'))) {
+
+            $usuario->full_control = true;
+            return view('Usuarios/grupos', $data);
+
+        }
+
+        $usuario->full_control = false;
 
         if (!empty($usuario->grupos)) {
             $gruposExistentes = array_column($usuario->grupos, 'grupo_id');
@@ -354,10 +366,33 @@ class Usuarios extends BaseController
         }
 
         // Quando o usuário for do grupo de clientes (id 2), não permite salvar
-        if (in_array(2, $post['grupo_id'])){
+        if (in_array($this->grupoClientes, $post['grupo_id'])){
             $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
             $retorno['erros_model'] = ['grupo_id' => 'O grupo de Clientes não pode ser atribuído de forma manual.'];
 
+            return $this->response->setJSON($retorno);
+        }
+
+        // Caso o usuário selecione o grupo Administrados, apenas ser esse grupo será salvo,
+        // independente dos demais selecionados
+        if (in_array($this->grupoAdministrador, $post['grupo_id'])){
+            $grupoAdmin[] = [
+                'grupo_id' => $this->grupoAdministrador,
+                'usuario_id' => $usuario->id
+            ];
+
+            $this->grupoUsuarioModel->insertBatch($grupoAdmin);
+
+            // Após inserir o grupo Administrador, remove os demais, caso existam para esse usuário
+            $this->grupoUsuarioModel
+                ->where('grupo_id !=', $this->grupoAdministrador)
+                ->where('usuario_id', $usuario->id)
+                ->delete();
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+            session()->setFlashdata('info', 'Notamos que o 
+            <b>Grupo Administrador</b> foi informado, 
+            por tanto não há necessidade de informar outros grupos, 
+            pois apenas o Administrador será associado ao usuário.');
             return $this->response->setJSON($retorno);
         }
 
