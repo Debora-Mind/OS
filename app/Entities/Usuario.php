@@ -24,4 +24,9 @@ class Usuario extends Entity
             return '<i class="fa fa-lock text-warning"></i>&nbsp;Inativo' ;
         }
     }
+
+    public function verificaPassword(string $password): bool
+    {
+        return password_verify($password, $this->password_hash);
+    }
 }
