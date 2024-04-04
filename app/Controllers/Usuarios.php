@@ -350,6 +350,27 @@ class Usuarios extends BaseController
         return view('Usuarios/grupos', $data);
     }
 
+    public function removeGrupo(int $principal_id = null)
+    {
+        if ($this->request->getMethod() === 'post') {
+
+            $grupoUsuario = $this->buscaGrupoUsuarioOu404($principal_id);
+
+            if ($grupoUsuario->grupo_id == $this->grupoClientes) {
+                return redirect()->to(site_url("usuarios/exibir/$grupoUsuario->usuario_id"))
+                    ->with('info', "Não é permitida a exclusão do usuário do grupo de Clientes");
+            }
+
+            $this->grupoUsuarioModel->delete($principal_id);
+
+            return redirect()->back()->with('sucesso', "Usuário removido do grupo de acesso com sucesso!");
+        }
+
+        // Não é post
+        return redirect()->back();
+
+    }
+
     public function salvarGrupos()
     {
         $retorno['token'] = csrf_hash();
@@ -418,6 +439,15 @@ class Usuarios extends BaseController
         }
 
         return $usuario;
+    }
+
+    private function buscaGrupoUsuarioOu404(int $principal_id = null)
+    {
+        if (!$principal_id || !$grupoUsuario = $this->grupoUsuarioModel->find($principal_id)){
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o registro de associação ao grupo de acesso $principal_id");
+        }
+
+        return $grupoUsuario;
     }
 
     private function removeImagemDoFileSystem($usuario)
