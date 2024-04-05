@@ -29,4 +29,21 @@ class Usuario extends Entity
     {
         return password_verify($password, $this->password_hash);
     }
+
+    public function temPermissaoPara(string $permissao): bool
+    {
+        if ($this->is_admin == true) {
+            return true;
+        }
+
+        if (empty($this->permissoes)){
+            return false;
+        }
+
+        if (in_array($permissao, $this->permissoes) == false) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -247,7 +247,6 @@
     <script src="<?= site_url('recursos/') ?>vendor/chart.js/Chart.min.js"></script>
     <script src="<?= site_url('recursos/') ?>vendor/jquery-validation/jquery.validate.min.js"></script>
     <script src="<?= site_url('recursos/') ?>js/charts-home.js"></script>
-
     <script src="<?= site_url('recursos/') ?>js/front.js"></script>
 
     <!-- Scripts específicos de cada view -->

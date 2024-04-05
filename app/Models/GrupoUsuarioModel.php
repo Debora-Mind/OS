@@ -26,4 +26,11 @@ class GrupoUsuarioModel extends Model
             ->groupBy('grupos.nome')
             ->paginate($quantidadePaginacao);
     }
+
+    public function usuarioEstaNoGrupo(int $grupoId, int $usuarioId)
+    {
+        return $this->where('grupo_id', $grupoId)
+            ->where('usuario_id', $usuarioId)
+            ->first();
+    }
 }

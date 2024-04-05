@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Autenticacao;
+
 class Home extends BaseController
 {
     public function index(): string
@@ -11,5 +13,13 @@ class Home extends BaseController
         ];
 
         return view('Home/index', $data);
+    }
+
+    public function login()
+    {
+        $autenticacao = service('autenticacao');
+
+        $usuario = $autenticacao->pegaUsuarioLogado();
+
     }
 }
