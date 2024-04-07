@@ -371,6 +371,26 @@ class Usuarios extends BaseController
 
     }
 
+    public function editarSenha()
+    {
+        $data = [
+            'titulo' => 'Edite a sua senha de acesso',
+        ];
+
+        return view('Usuarios/editar_senha', $data);
+    }
+
+    public function atualizarSenha()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+
+    }
+
     public function salvarGrupos()
     {
         $retorno['token'] = csrf_hash();
