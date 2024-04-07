@@ -14,7 +14,7 @@ class UsuarioFakerSeeder extends Seeder
 
         $faker = Factory::create();
 
-        $criarQuantosUsuarios = 10000;
+        $criarQuantosUsuarios = 100000;
 
         $usuariosPush = [];
 
