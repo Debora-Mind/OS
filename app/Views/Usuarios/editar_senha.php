@@ -22,7 +22,7 @@
 
                     <div class="form-group">
                         <label class="form-control-label">Informe a senha atual</label>
-                        <input type="password" name="currunt_password" class="form-control">
+                        <input type="password" name="current_password" class="form-control">
                     </div>
                     <div class="form-group">
                         <label class="form-control-label">Informe a nova senha</label>

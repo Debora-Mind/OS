@@ -388,6 +388,33 @@ class Usuarios extends BaseController
 
         $retorno['token'] = csrf_hash();
 
+        $currentPassword = $this->request->getPost('current_password');
+
+        $usuario = usuario_logado();
+
+        if ($usuario->verificaPassword($currentPassword) === false){
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['current_password' => 'Senha atual inválida'];
+            return $this->response->setJSON($retorno);
+        }
+
+        $usuario->fill($this->request->getPost());
+
+        if ($usuario->hasChanged() === false) {
+            $retorno['info'] = 'Não há dados para atualizar';
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->usuarioModel->save($usuario)) {
+            $retorno['sucesso'] = 'Senha atualizada com sucesso!';
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->usuarioModel->errors();
+
+        return $this->response->setJSON($retorno);
 
     }
 
