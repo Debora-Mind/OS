@@ -49,6 +49,13 @@
                 <div class="content">
 
                 <?= form_open('/', ['id' => 'form', 'class' => 'form-validate']) ?>
+
+                    <div id="response">
+
+                    </div>
+
+                    <?= $this->include('Layout/_mensagens') ?>
+
                     <div class="form-group">
                       <input id="login-username" type="text" name="email" required data-msg="Por favor informe seu e-mail" class="input-material">
                       <label for="login-username" class="label-material">Seu e-mail de acesso</label>
@@ -77,6 +84,56 @@
     <script src="<?= site_url('recursos/') ?>vendor/bootstrap/js/bootstrap.min.js"> </script>
     <script src="<?= site_url('recursos/') ?>vendor/jquery-validation/jquery.validate.min.js"></script>
     <script src="<?= site_url('recursos/') ?>js/front.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#form").on('submit', function (e){
+
+                e.preventDefault()
+
+                $.ajax({
+                    type: 'POST',
+                    url: '<?= site_url('login/criar') ?>',
+                    data: new FormData(this),
+                    dataType: 'json',
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    beforeSend: function (){
+                        $('#response').html('')
+                        $('#btn-login').val('Por favor aguarde...')
+                    },
+                    success: function (response){
+                        $('#btn-login').val('Entrar').removeAttr('disabled')
+
+                        $('[name=csrf_ordem]').val(response.token);
+
+                        if (!response.erro) {
+                            window.location.href = "<?= site_url(); ?>" + response.redirect;
+                        }
+                        else {
+                            $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
+
+                            if (response.erros_model) {
+                                $.each(response.erros_model, function (key, value) {
+                                    $("#response").append('<ul class="list-unstyled"><li class="text-danger">' + value + '</li></ul>')
+                                })
+                            }
+                        }
+                    },
+                    error: function (){
+                        alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
+                        $('#btn-login').val('Entrar').removeAttr('disabled')
+                    }
+                })
+
+            });
+
+            $("#form").submit(function () {
+                $(this).find(":submit").attr('disabled', 'disabled')
+            })
+        })
+    </script>
 
   </body>
 </html>

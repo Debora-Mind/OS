@@ -318,7 +318,7 @@ class Usuarios extends BaseController
 
         // Quando o usuário for do grupo de clientes (id 2), retorna para view de exibição de usuários
         if (in_array($this->grupoClientes, array_column($usuario->grupos, 'grupo_id'))) {
-            return redirect()->to(site_url("usuarios/exibir/$usuario->"))
+            return redirect()->to(site_url("usuarios/exibir/$usuario->id"))
                 ->with('info', 'Esse usuário é um cliente, portando não é necessário atribuí-lo ou
                  removê-lo de outros grupos de acesso');
         }

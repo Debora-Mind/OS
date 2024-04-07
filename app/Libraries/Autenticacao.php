@@ -102,7 +102,7 @@ class Autenticacao
             return null;
         }
 
-        $usuario = $this->usuarioModel->find(session())->get('usuario_id');
+        $usuario = $this->usuarioModel->find(session()->get('usuario_id'));
 
         if ($usuario == null || !$usuario->ativo) {
             return null;
