@@ -14,15 +14,22 @@ class UsuarioFakerSeeder extends Seeder
 
         $faker = Factory::create();
 
-        $criarQuantosUsuarios = 100000;
+        $criarQuantosUsuarios = 10000;
 
-        $usuariosPush = [];
+        $usuariosPush[] = [
+            'nome' => 'admin',
+            'email' => 'admin@admin.com',
+            //Senha: Admin123
+            'password_hash' => '$2y$10$tGqcJVWZZWt/9UQ1rUbOBuC.zV9blh3wZyvsU6qpfuFgutnoNIeMO',
+            'ativo' => 1,
+        ];
 
         for ($i = 0; $i < $criarQuantosUsuarios; $i++){
             $usuariosPush[] = [
                 'nome' => $faker->unique()->name,
                 'email' => $faker->unique()->email,
-                'password_hash' => '123456',
+                //Senha: 123456
+                'password_hash' => '$2y$10$IoGLL/k7xUiLr/rT6opP6eHGBD9dXdOTWOhl3NIHU3VQjjWMOBj1u',
                 'ativo' => $faker->numberBetween(0, 1),
             ];
         }
@@ -31,7 +38,8 @@ class UsuarioFakerSeeder extends Seeder
             ->protect(false)
             ->insertBatch($usuariosPush);
 
-    echo $criarQuantosUsuarios . "usuários criados com sucesso";
 
+    echo "Usuário admin criados com sucesso\n";
+    echo $criarQuantosUsuarios . "usuários criados com sucesso\n";
     }
 }
