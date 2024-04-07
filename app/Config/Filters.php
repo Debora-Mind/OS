@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Filters\LoginFilter;
+use App\Filters\VisitanteFilter;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
@@ -26,6 +27,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'login'         => LoginFilter::class,
+        'visitante'     => VisitanteFilter::class,
     ];
 
     /**
@@ -74,7 +76,13 @@ class Filters extends BaseConfig
                 'home(/*)?',
                 'usuarios(/*)?',
                 'grupos(/*)?',
-            ]
-        ]
+            ],
+        ],
+        'visitante' => [
+            'before' => [
+                'login(/*)?',
+                'password(/*)?',
+            ],
+        ],
     ];
 }
