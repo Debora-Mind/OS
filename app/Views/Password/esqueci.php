@@ -15,7 +15,7 @@
                     <div class="logo">
                         <h1><?= $titulo ?></h1>
                     </div>
-                    <p>Bem-vindo(a) à OS - Sistema de gestão e controle de ordens de serviço!</p>
+                    <p>Informe seu e-mail de acesso para iniciarmos a recuperação da senha.</p>
                 </div>
             </div>
         </div>
@@ -32,16 +32,13 @@
 
                     <div class="form-group">
                         <input id="login-username" type="text" name="email" required data-msg="Por favor informe seu e-mail" class="input-material">
-                        <label for="login-username" class="label-material">Seu e-mail de acesso</label>
+                        <label for="login-username" class="label-material">Informe seu e-mail de acesso</label>
                     </div>
-                    <div class="form-group">
-                        <input id="login-password" type="password" name="password" required data-msg="Por favor informe sua senha" class="input-material">
-                        <label for="login-password" class="label-material">Sua senha</label>
-                    </div>
-                    <input type="submit" id="btn-login" href="index.html" class="btn btn-primary" value="Entrar">
+
+                    <input type="submit" id="btn-esqueci" href="index.html" class="btn btn-primary" value="Enviar">
                     <!-- This should be submit button but I replaced it with <a> for demo purposes-->
                     <?= form_close() ?>
-                    <a href="<?= site_url('esqueci') ?>" class="forgot-pass mt-2">Esqueceu sua senha?</a>
+                    <a href="<?= site_url('login') ?>" class="forgot-pass mt-2">Lembrou a sua senha de acesso?</a>
                 </div>
             </div>
         </div>
@@ -58,7 +55,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '<?= site_url('login/criar') ?>',
+                    url: '<?= site_url('password/processaesqueci') ?>',
                     data: new FormData(this),
                     dataType: 'json',
                     contentType: false,
@@ -66,15 +63,15 @@
                     processData: false,
                     beforeSend: function (){
                         $('#response').html('')
-                        $('#btn-login').val('Por favor aguarde...')
+                        $('#btn-esqueci').val('Por favor aguarde...')
                     },
                     success: function (response){
-                        $('#btn-login').val('Entrar').removeAttr('disabled')
+                        $('#btn-esqueci').val('Enviar').removeAttr('disabled')
 
                         $('[name=csrf_ordem]').val(response.token);
 
                         if (!response.erro) {
-                            window.location.href = "<?= site_url(); ?>" + response.redirect;
+                            window.location.href = "<?= site_url('password/resetenviado'); ?>"
                         }
                         else {
                             $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
@@ -88,7 +85,7 @@
                     },
                     error: function (){
                         alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
-                        $('#btn-login').val('Entrar').removeAttr('disabled')
+                        $('#btn-esqueci').val('Enviar').removeAttr('disabled')
                     }
                 })
 
