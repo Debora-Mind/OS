@@ -67,7 +67,14 @@ class Password extends BaseController
         $email->setTo('debora.almeida.de.mello@gmail.com');
 
         $email->setSubject('OS | Redefinição da senha de acesso');
-        $email->setMessage('Iniciando a recuperação de senha');
+
+        $data = [
+            'token' => $usuario->reset_token
+        ];
+
+        $mensagem = view('Password/reset_email', $data);
+
+        $email->setMessage($mensagem);
 
         $email->send();
     }
