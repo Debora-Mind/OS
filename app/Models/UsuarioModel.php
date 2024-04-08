@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Libraries\Token;
 use CodeIgniter\Model;
 use PhpParser\Node\Stmt\Unset_;
 
@@ -95,6 +96,26 @@ class UsuarioModel extends Model
                 ->where('usuarios.id', $usuario_id)
                 ->groupBy('permissoes.nome')
                 ->findAll();
+    }
+
+    public function buscaUsuarioPorToken(string $token)
+    {
+        $token = new Token($token);
+        $tokenHash = $token->getHash();
+
+        $usuario = $this->where('reset_hash', $tokenHash)
+            ->where('deleted_at', null)
+            ->first();
+
+        if ($usuario === null) {
+            return null;
+        }
+
+        if ($usuario->reset_expira_em < date('Y-m-d H:i:s')) {
+            return null;
+        }
+
+        return $usuario;
     }
 
 }
