@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Libraries\Autenticacao;
+use CodeIgniter\Email\Email;
+use Config\Services;
 
 class Home extends BaseController
 {

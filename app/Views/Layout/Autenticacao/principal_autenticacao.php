@@ -34,8 +34,8 @@
       <div class="container d-flex align-items-center">
         <div class="form-holder has-shadow">
 
-            <?= $this->renderSection('conteudo') ?>
             <?= $this->include('Layout/_mensagens') ?>
+            <?= $this->renderSection('conteudo') ?>
 
         </div>
       </div>
