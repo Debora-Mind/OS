@@ -68,7 +68,30 @@ class Password extends BaseController
 
         $usuario = $this->usuarioModel->buscaUsuarioPorToken($token);
 
-        dd($usuario);
+        if ($usuario === null) {
+            return redirect()->to(site_url('password/esqueci'))
+                ->with('atencao', 'Link inválido ou expirado');
+        }
+
+        $data = [
+            'titulo' => 'Crie a sua nova senha de acesso.',
+            'token' => $token,
+        ];
+
+        return view('Password/reset', $data);
+    }
+
+    public function processaReset()
+    {
+        if (!$this->request->isAJAX()){
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $token = $this->request->getPost('email');
+
+
     }
 
     private  function enviaEmailRedefinicaoSenha(object $usuario): void

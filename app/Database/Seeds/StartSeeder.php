@@ -10,6 +10,5 @@ class StartSeeder extends Seeder
     {
         $this->call('GrupoSeeder');
         $this->call('PermissaoSeeder');
-        $this->call('PermissaoSeeder');
     }
 }
