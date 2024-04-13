@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class FornecedorMoedel extends Model
+class FornecedorModel extends Model
 {
     protected $table = 'fornecedores';
     protected $returnType = 'App\Entities\Fornecedor';
