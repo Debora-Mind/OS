@@ -77,6 +77,18 @@ class Fornecedores extends BaseController
         return view('Fornecedores/exibir', $data);
     }
 
+    public function editar(int $id = null)
+    {
+        $fornecedor = $this->buscaFornecedorOu404($id);
+
+        $data= [
+            'titulo' => 'Editando o fornecedor' . esc($fornecedor->nome),
+            'fornecedor' => $fornecedor
+        ];
+
+        return view('Fornecedores/editar', $data);
+    }
+
     private function buscaFornecedorOu404(int $id = null)
     {
         if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)){
