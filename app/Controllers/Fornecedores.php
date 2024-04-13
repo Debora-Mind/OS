@@ -3,9 +3,11 @@
 namespace App\Controllers;
 
 use App\Models\FornecedorModel;
+use App\Traits\ValidacoesTrait;
 
 class Fornecedores extends BaseController
 {
+    use ValidacoesTrait;
     private $fornecedorModel;
 
     public function __construct()
@@ -87,6 +89,17 @@ class Fornecedores extends BaseController
         ];
 
         return view('Fornecedores/editar', $data);
+    }
+
+    public function consultaCep()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $cep = $this->request->getGet('cep');
+
+        return $this->response->setJSON($this->consultaViaCep($cep));
     }
 
     private function buscaFornecedorOu404(int $id = null)

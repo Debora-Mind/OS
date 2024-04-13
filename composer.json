@@ -10,9 +10,11 @@
         "slack": "https://codeigniterchat.slack.com"
     },
     "require": {
-        "php": "^7.4 || ^8.0",
-        "codeigniter4/framework": "^4.0",
-      "ext-fileinfo": "*"
+        "php": "^7.4|^8.1",
+        "codeigniter4/framework": "^v4.1.0",
+      "ext-fileinfo": "*",
+      "ext-curl": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",
