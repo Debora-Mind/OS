@@ -57,4 +57,10 @@ class Usuario extends Entity
         //Expira em 2h
         $this->reset_expira_em = date('Y-m-d H:i:s', time() + 7200);
     }
+
+    public function finalizaPasswordReset(): void
+    {
+        $this->reset_hash = null;
+        $this->reset_expira_em = null;
+    }
 }

@@ -89,9 +89,31 @@ class Password extends BaseController
 
         $retorno['token'] = csrf_hash();
 
-        $token = $this->request->getPost('email');
+        $post = $this->request->getPost();
 
+        $usuario = $this->usuarioModel->buscaUsuarioPorToken($post['token']);
 
+        if ($usuario === null) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['link_invalido' => 'Link inválido ou expirado'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $usuario->fill($post);
+
+        $usuario->finalizaPasswordReset();
+
+        if ($this->usuarioModel->save($usuario)) {
+            session()->setFlashdata('sucesso', 'Nova senha criada com sucesso!');
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->usuarioModel->errors();
+
+        return $this->response->setJSON($retorno);
     }
 
     private  function enviaEmailRedefinicaoSenha(object $usuario): void

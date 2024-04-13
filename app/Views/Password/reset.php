@@ -40,7 +40,7 @@
                         <label for="login-password" class="label-material">Confirme a sua nova senha</label>
                     </div>
 
-                    <input type="submit" id="btn-reset" href="index.html" class="btn btn-primary" value="Entrar">
+                    <input type="submit" id="btn-reset" href="index.html" class="btn btn-primary" value="Salvar">
 
                     <?= form_close() ?>
 
@@ -60,7 +60,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '<?= site_url('login/processareset') ?>',
+                    url: '<?= site_url('password/processareset') ?>',
                     data: new FormData(this),
                     dataType: 'json',
                     contentType: false,
@@ -71,7 +71,7 @@
                         $('#btn-reset').val('Por favor aguarde...')
                     },
                     success: function (response){
-                        $('#btn-reset').val('Entrar').removeAttr('disabled')
+                        $('#btn-reset').val('Salvar').removeAttr('disabled')
 
                         $('[name=csrf_ordem]').val(response.token);
 
@@ -90,7 +90,7 @@
                     },
                     error: function (){
                         alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
-                        $('#btn-reset').val('Entrar').removeAttr('disabled')
+                        $('#btn-reset').val('Salvar').removeAttr('disabled')
                     }
                 })
 
