@@ -21,7 +21,7 @@
                         <th>Nome</th>
                         <th>Tipo</th>
                         <th>Estoque</th>
-                        <th>Preço de venda</th>
+                        <th class="text-left">Preço de venda</th>
                         <th>Situação</th>
                     </tr>
                     </thead>
@@ -76,7 +76,7 @@
                 {"data": "nome"},
                 {"data": "tipo"},
                 {"data": "estoque"},
-                {"data": "preco_venda"},
+                {"data": "preco_venda", "class": "text-left"},
                 {"data": "ativo"},
             ],
             "order": [],
