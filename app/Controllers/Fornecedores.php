@@ -84,11 +84,50 @@ class Fornecedores extends BaseController
         $fornecedor = $this->buscaFornecedorOu404($id);
 
         $data= [
-            'titulo' => 'Editando o fornecedor' . esc($fornecedor->nome),
+            'titulo' => 'Editando o fornecedor ' . esc($fornecedor->razao),
             'fornecedor' => $fornecedor
         ];
 
         return view('Fornecedores/editar', $data);
+    }
+
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $fornecedor = $this->buscaFornecedorOu404($post['id']);
+
+        if (session()->get('blockCep') === true) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['cep' => 'Informe um CEP válido'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $fornecedor->fill($post);
+        $fornecedor->removeFormatacao();
+
+        if (!$fornecedor->hasChanged()) {
+            $retorno['info'] = 'Não há dados para atualizar';
+
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->fornecedorModel->save($fornecedor)) {
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->fornecedorModel->errors();
+
+        return $this->response->setJSON($retorno);
     }
 
     public function consultaCep()

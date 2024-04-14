@@ -149,7 +149,7 @@ class Usuarios extends BaseController
         $usuario = $this->buscaUsuarioOu404($id);
 
         $data= [
-            'titulo' => 'Editando o usuário' . esc($usuario->nome),
+            'titulo' => 'Editando o usuário ' . esc($usuario->nome),
             'usuario' => $usuario
         ];
 

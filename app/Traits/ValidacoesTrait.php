@@ -15,7 +15,6 @@ trait ValidacoesTrait
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         // Adicione estas opções para ignorar erros de certificado SSL
-//        curl_setopt($ch, CURLOPT_SSLCERTTYPE, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         $resposta = curl_exec($ch);

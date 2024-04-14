@@ -41,6 +41,13 @@ class Fornecedor extends Entity
         return $telefone_formatado;
     }
 
+    public function removeFormatacao()
+    {
+        $this->cnpj = str_replace(['.', '-', '/'], '', $this->cnpj);
+        $this->telefone = str_replace(['-', '(', ')'], '', $this->telefone);
+        $this->cep = str_replace('-', '', $this->cep);
+    }
+
     public function exibeSituacao()
     {
         if ($this->deleted_at != null) {

@@ -37,7 +37,7 @@ class FornecedorModel extends Model
         'cnpj' => 'required|validaCNPJ|min_length[14]|max_length[14]|is_unique[fornecedores.cnpj,id,{id}]',
         'ie' => 'required|max_length[30]|is_unique[fornecedores.ie,id,{id}]',
         'telefone' => 'required|min_length[10]|max_length[20]|is_unique[fornecedores.telefone,id,{id}]',
-        'cep' => 'required|min_length[9]|max_length[9]',
+        'cep' => 'required|min_length[8]|max_length[8]',
         'endereco' => 'required|max_length[255]',
         'numero' => 'max_length[50]',
         'bairro' => 'required|max_length[128]',
@@ -94,17 +94,4 @@ class FornecedorModel extends Model
             'max_length' => 'O campo Estado deve conter 2 caractéres.',
         ]
     ];
-    protected $skipValidation = false;
-    protected $cleanValidationRules = true;
-
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert = [];
-    protected $afterInsert = [];
-    protected $beforeUpdate = [];
-    protected $afterUpdate = [];
-    protected $beforeFind = [];
-    protected $afterFind = [];
-    protected $beforeDelete = [];
-    protected $afterDelete = [];
 }
