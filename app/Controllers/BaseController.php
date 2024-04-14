@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
@@ -60,6 +61,10 @@ abstract class BaseController extends Controller
     protected function exibeArquivo(string $destino, string $arquivo)
     {
         $path = WRITEPATH . "uploads/$destino/$arquivo";
+
+        if (!is_file($path)){
+            throw PageNotFoundException::forPageNotFound("Não encontramos o arquivo");
+        }
 
         $fileInfo = new finfo(FILEINFO_MIME);
         $fileType = $fileInfo->file($path);
