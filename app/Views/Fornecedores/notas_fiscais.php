@@ -81,11 +81,13 @@
                                         'onSubmit' => "return confirm('Tem certeza da exclusão da nota fiscal?');"
                                     ];
                                     ?>
-                                    <?= form_open("forncedores/removenota/$nota->id", $atributos) ?>
+                                    <?= form_open("fornecedores/removenota/$nota->nota_fiscal", $atributos) ?>
 
-                                    <a target="_blank" href="<?= site_url("fornecedores/exibirnota/$nota->nota_fiscal")?>"
-                                    class="btn btn-sm btn-outline-primary mr-2"><i class="fa fa-eye"></i></a>
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>
+                                    <a target="_blank"
+                                       href="<?= site_url("fornecedores/exibirnota/$nota->nota_fiscal") ?>"
+                                       class="btn btn-sm btn-outline-primary mr-2"><i class="fa fa-eye"></i></a>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i>
+                                    </button>
                                 </td>
 
                                 <?= form_close() ?>
@@ -162,7 +164,7 @@
 
 <!--Limita o tamanho do arquivo para 5MB-->
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Função para validar o tamanho do arquivo
         function validarTamanhoArquivo(input) {
             // Verificar se o navegador suporta a propriedade 'files'
@@ -189,7 +191,7 @@
         }
 
         // Associar evento onchange ao campo de entrada de arquivo
-        $('input[type="file"]').change(function() {
+        $('input[type="file"]').change(function () {
             validarTamanhoArquivo(this);
         });
     });

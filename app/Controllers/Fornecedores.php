@@ -124,6 +124,15 @@ class Fornecedores extends BaseController
         return view('Fornecedores/exibir', $data);
     }
 
+    private function buscaFornecedorOu404(int $id = null)
+    {
+        if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o fornecedor $id");
+        }
+
+        return $fornecedor;
+    }
+
     public function editar(int $id = null)
     {
         $fornecedor = $this->buscaFornecedorOu404($id);
@@ -248,7 +257,7 @@ class Fornecedores extends BaseController
 
         $valorNota = str_replace([',', '.'], '', $post['valor_nota']);
 
-        if ($valorNota < 1){
+        if ($valorNota < 1) {
             $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
             $retorno['erros_model'] = ['valor_nota' => 'O valor da nota deve ser maior que zero'];
             return $this->response->setJSON($retorno);
@@ -284,36 +293,6 @@ class Fornecedores extends BaseController
         return $this->response->setJSON($retorno);
     }
 
-    public function exibirNota(string $nota = null)
-    {
-        if ($nota === null){
-            return redirect()->to(site_url('fornecedores'))->with('atencao', "Mão encontramos a nota fiscal $nota");
-        }
-
-        $this->exibeArquivo('fornecedores/notasfiscais', $nota);
-
-    }
-
-    public function consultaCep()
-    {
-        if (!$this->request->isAJAX()) {
-            return redirect()->back();
-        }
-
-        $cep = $this->request->getGet('cep');
-
-        return $this->response->setJSON($this->consultaViaCep($cep));
-    }
-
-    private function buscaFornecedorOu404(int $id = null)
-    {
-        if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)) {
-            throw PageNotFoundException::forPageNotFound("Não encontramos o fornecedor $id");
-        }
-
-        return $fornecedor;
-    }
-
     private function validacoes(): ?object
     {
         $validacao = service('validation');
@@ -345,6 +324,54 @@ class Fornecedores extends BaseController
         $validacao->setRules($regras, $mensagens);
 
         return $validacao;
+    }
+
+    public function exibirNota(string $nota = null)
+    {
+        if ($nota === null) {
+            return redirect()->to(site_url('fornecedores'))->with('atencao', "Mão encontramos a nota fiscal $nota");
+        }
+
+        $this->exibeArquivo('fornecedores/notasfiscais', $nota);
+    }
+
+    public function removeNota(string $notaFiscal = null)
+    {
+        if ($this->request->getMethod() === 'post') {
+            $objetNota = $this->buscaNotaFiscalOu404($notaFiscal);
+
+            $this->fornecedorNotaFiscalModel->delete($objetNota->id);
+
+            $caminhoNotaFiscal = WRITEPATH . "uploads/fornecedores/notasfiscais/$notaFiscal";
+
+            if (is_file($caminhoNotaFiscal)) {
+                unlink($caminhoNotaFiscal);
+            }
+
+            return redirect()->back()->with("sucesso", "Nota fiscal removida com sucesso!");
+        }
+
+        return redirect()->back();
+    }
+
+    private function buscaNotaFiscalOu404(string $nota_fiscal = null)
+    {
+        if (!$nota_fiscal || !$objetoNota = $this->fornecedorNotaFiscalModel->where('nota_fiscal', $nota_fiscal)->first()) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos a nota fiscal $nota_fiscal");
+        }
+
+        return $objetoNota;
+    }
+
+    public function consultaCep()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $cep = $this->request->getGet('cep');
+
+        return $this->response->setJSON($this->consultaViaCep($cep));
     }
 
 }
