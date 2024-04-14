@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\Fornecedor;
 use App\Models\FornecedorModel;
 use App\Traits\ValidacoesTrait;
 
@@ -65,6 +66,44 @@ class Fornecedores extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function criar()
+    {
+        $fornecedor = new Fornecedor();
+
+        $data= [
+            'titulo' => 'Cadastrar novo fornecedor',
+            'fornecedor' => $fornecedor
+        ];
+
+        return view('Fornecedores/criar', $data);
+    }
+
+    public function cadastrar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $fornecedor = new Fornecedor($post);
+        $fornecedor->removeFormatacao();
+
+        if ($this->fornecedorModel->save($fornecedor)) {
+            $btnCriar = anchor("fornecedores/criar", "Cadastrar fornecedor", ['class' => 'btn btn-danger mt-2']);
+            session()->setFlashdata('sucesso', "Dados salvos com sucesso! <br> $btnCriar");
+
+            $retorno['id'] = $this->fornecedorModel->getInsertID();
+            return $this->response->setJSON($retorno);
+        }
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->fornecedorModel->errors();
+
+        return $this->response->setJSON($retorno);
+    }
+    
     public function exibir(int $id = null)
     {
         $fornecedor = $this->buscaFornecedorOu404($id);
