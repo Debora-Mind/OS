@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Entities\Fornecedor;
 use App\Models\FornecedorModel;
+use App\Models\FornecedorNotaFiscalModel;
 use App\Traits\ValidacoesTrait;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
@@ -12,10 +13,12 @@ class Fornecedores extends BaseController
     use ValidacoesTrait;
 
     private $fornecedorModel;
+    private $fornecedorNotaFiscalModel;
 
     public function __construct()
     {
         $this->fornecedorModel = new FornecedorModel();
+        $this->fornecedorNotaFiscalModel = new FornecedorNotaFiscalModel();
     }
 
     public function index()
@@ -219,6 +222,26 @@ class Fornecedores extends BaseController
         $this->fornecedorModel->protect(false)->save($fornecedor);
 
         return redirect()->back()->with('sucesso', "Fornecedor " . esc($fornecedor->razao) . " recuperado com sucesso!");
+    }
+
+    public function notas(int $id = null)
+    {
+        $fornecedor = $this->buscaFornecedorOu404($id);
+        $fornecedor->cnpj = $fornecedor->formatarCNPJ();
+        $fornecedor->telefone = $fornecedor->formatarTelefone();
+
+        $fornecedor->notas_fiscais = $this->fornecedorNotaFiscalModel->where('fornecedor_id', $fornecedor->id)->paginate(10);
+
+        if ($fornecedor->notas_fiscais != null) {
+            $fornecedor->pager = $this->fornecedorNotaFiscalModel->pager;
+        }
+
+        $data = [
+            'titulo' => 'Gerenciando as notas fiscais do fornecedor' . esc($fornecedor->razao),
+            'fornecedor' => $fornecedor
+        ];
+
+        return view('Fornecedores/notas_fiscais', $data);
     }
 
     public function consultaCep()
