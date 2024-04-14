@@ -123,15 +123,6 @@ class Fornecedores extends BaseController
         return view('Fornecedores/exibir', $data);
     }
 
-    private function buscaFornecedorOu404(int $id = null)
-    {
-        if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)) {
-            throw PageNotFoundException::forPageNotFound("Não encontramos o fornecedor $id");
-        }
-
-        return $fornecedor;
-    }
-
     public function editar(int $id = null)
     {
         $fornecedor = $this->buscaFornecedorOu404($id);
@@ -237,7 +228,7 @@ class Fornecedores extends BaseController
         }
 
         $data = [
-            'titulo' => 'Gerenciando as notas fiscais do fornecedor' . esc($fornecedor->razao),
+            'titulo' => 'Gerenciando as notas fiscais do fornecedor ' . esc($fornecedor->razao),
             'fornecedor' => $fornecedor
         ];
 
@@ -253,6 +244,15 @@ class Fornecedores extends BaseController
         $cep = $this->request->getGet('cep');
 
         return $this->response->setJSON($this->consultaViaCep($cep));
+    }
+
+    private function buscaFornecedorOu404(int $id = null)
+    {
+        if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o fornecedor $id");
+        }
+
+        return $fornecedor;
     }
 
 }
