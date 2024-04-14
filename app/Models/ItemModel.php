@@ -52,7 +52,7 @@ class ItemModel extends Model
     public function geraCodigoInternoItem(): string
     {
         do {
-            $codigoInterno = random_string('numeric', 8);
+            $codigoInterno = random_string('numeric', 15);
             $this->where('codigo_interno', $codigoInterno);
 
         } while ($this->countAllResults() > 1);
