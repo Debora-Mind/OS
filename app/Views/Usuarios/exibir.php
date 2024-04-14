@@ -13,17 +13,17 @@
     <div class="col-lg-4">
         <div class="user-block block">
             <div class="text-center">
-                
+
                 <?php if ($usuario->imagem == null): ?>
-                
+
                     <img src="<?= site_url('recursos/img/usuario_sem_imagem.png') ?>" alt="Usuário sem imagem"
                          class="card-img-top" style="width: 90%">
-                
+
                 <?php else: ?>
-                
+
                     <img src="<?= site_url("usuarios/imagem/$usuario->imagem") ?>" alt="<?= $usuario->nome ?>"
                          class="card-img-top" style="width: 90%">
-                
+
                 <?php endif; ?>
 
                 <a href="<?= site_url("usuarios/editarimagem/$usuario->id") ?>"
@@ -44,17 +44,20 @@
 
             <div class="btn-group">
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
+                        aria-expanded="false">
                     Ações
                 </button>
                 <div class="dropdown-menu">
                     <a href="<?= site_url("usuarios/editar/$usuario->id") ?>" class="dropdown-item">Editar usuário</a>
-                    <a href="<?= site_url("usuarios/grupos/$usuario->id") ?>" class="dropdown-item">Gerenciar os grupos de acesso</a>
+                    <a href="<?= site_url("usuarios/grupos/$usuario->id") ?>" class="dropdown-item">Gerenciar os grupos
+                        de acesso</a>
                     <div class="dropdown-divider"></div>
                     <?php if ($usuario->deleted_at == null): ?>
-                        <a href="<?= site_url("usuarios/excluir/$usuario->id") ?>" class="dropdown-item">Excluir usuário</a>
+                        <a href="<?= site_url("usuarios/excluir/$usuario->id") ?>" class="dropdown-item">Excluir
+                            usuário</a>
                     <?php else: ?>
-                        <a href="<?= site_url("usuarios/restaurar/$usuario->id") ?>" class="dropdown-item">Restaurar usuário</a>
+                        <a href="<?= site_url("usuarios/restaurar/$usuario->id") ?>" class="dropdown-item">Restaurar
+                            usuário</a>
                     <?php endif; ?>
                 </div>
             </div>

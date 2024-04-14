@@ -59,7 +59,8 @@
 
                     <input id="btn-salvar" type="submit" class="btn btn-danger btn-sm mr-2" value="Salvar">
 
-                    <a href="<?= site_url("grupos/exibir/$grupo->id") ?>" class="btn btn-secondary btn-sm ml-2">Voltar</a>
+                    <a href="<?= site_url("grupos/exibir/$grupo->id") ?>"
+                       class="btn btn-secondary btn-sm ml-2">Voltar</a>
                 </div>
 
                 <?= form_close() ?>
@@ -79,10 +80,10 @@
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
-                            <tr>
-                                <th>Permissão</th>
-                                <th>Excluir</th>
-                            </tr>
+                        <tr>
+                            <th>Permissão</th>
+                            <th>Excluir</th>
+                        </tr>
                         </thead>
                         <tbody>
                         <?php foreach ($grupo->permissoes as $permissao): ?>
@@ -90,15 +91,16 @@
                                 <td><?= $permissao->nome ?></td>
                                 <td>
                                     <?php
-                                        $atributos = [
-                                            'onSubmit' => "return confirm('Tem certeza da exclusão da permissão?');"
-                                        ];
+                                    $atributos = [
+                                        'onSubmit' => "return confirm('Tem certeza da exclusão da permissão?');"
+                                    ];
                                     ?>
                                     <?= form_open("grupos/removepermissao/$permissao->principal_id", $atributos) ?>
 
-                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button></td>
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </td>
 
-                                    <?= form_close() ?>
+                                <?= form_close() ?>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -126,7 +128,7 @@
     })
 
     $(document).ready(function () {
-        $("#form").on('submit', function (e){
+        $("#form").on('submit', function (e) {
 
             e.preventDefault()
 
@@ -138,19 +140,18 @@
                 contentType: false,
                 cache: false,
                 processData: false,
-                beforeSend: function (){
+                beforeSend: function () {
                     $('#response').html('')
                     $('#btn-salvar').val('Por favor aguarde...')
                 },
-                success: function (response){
+                success: function (response) {
                     $('#btn-salvar').val('Salvar').removeAttr('disabled')
 
                     $('[name=csrf_ordem]').val(response.token);
 
                     if (!response.erro) {
                         window.location.href = "<?= site_url("grupos/exibir/$grupo->id"); ?>";
-                    }
-                    else {
+                    } else {
                         $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
 
                         if (response.erros_model) {
@@ -160,7 +161,7 @@
                         }
                     }
                 },
-                error: function (){
+                error: function () {
                     alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
                     $('#btn-salvar').val('Salvar').removeAttr('disabled')
                 }

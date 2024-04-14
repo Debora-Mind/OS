@@ -22,7 +22,7 @@ class FornecedorFakerSeeder extends Seeder
 
         $fornecedoresPush = [];
 
-        for ($i = 0; $i < $criarQuantosFornecedores; $i++){
+        for ($i = 0; $i < $criarQuantosFornecedores; $i++) {
             $fornecedoresPush[] = [
                 'razao' => $faker->unique()->company,
                 'cnpj' => str_replace(['.', '/', '-'], '', $faker->unique()->cnpj),
@@ -37,8 +37,8 @@ class FornecedorFakerSeeder extends Seeder
                     str_pad(
                         substr(
                             str_replace('-', '', $faker->postcode())
-                        , 0, 8),
-                    8, '0', STR_PAD_RIGHT),
+                            , 0, 8),
+                        8, '0', STR_PAD_RIGHT),
                 'ativo' => $faker->numberBetween(0, 1),
                 'created_at' => $faker->dateTimeBetween('-2 month', '-1 days')->format('Y-m-d H:i:s'),
                 'updated_at' => $faker->dateTimeBetween('-2 month', '-1 days')->format('Y-m-d H:i:s'),

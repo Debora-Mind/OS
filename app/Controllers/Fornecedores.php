@@ -5,10 +5,12 @@ namespace App\Controllers;
 use App\Entities\Fornecedor;
 use App\Models\FornecedorModel;
 use App\Traits\ValidacoesTrait;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Fornecedores extends BaseController
 {
     use ValidacoesTrait;
+
     private $fornecedorModel;
 
     public function __construct()
@@ -70,7 +72,7 @@ class Fornecedores extends BaseController
     {
         $fornecedor = new Fornecedor();
 
-        $data= [
+        $data = [
             'titulo' => 'Cadastrar novo fornecedor',
             'fornecedor' => $fornecedor
         ];
@@ -103,14 +105,14 @@ class Fornecedores extends BaseController
 
         return $this->response->setJSON($retorno);
     }
-    
+
     public function exibir(int $id = null)
     {
         $fornecedor = $this->buscaFornecedorOu404($id);
         $fornecedor->cnpj = $fornecedor->formatarCNPJ();
         $fornecedor->telefone = $fornecedor->formatarTelefone();
 
-        $data= [
+        $data = [
             'titulo' => 'Detalhando o fornecedor' . esc($fornecedor->razao),
             'fornecedor' => $fornecedor
         ];
@@ -118,11 +120,20 @@ class Fornecedores extends BaseController
         return view('Fornecedores/exibir', $data);
     }
 
+    private function buscaFornecedorOu404(int $id = null)
+    {
+        if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o fornecedor $id");
+        }
+
+        return $fornecedor;
+    }
+
     public function editar(int $id = null)
     {
         $fornecedor = $this->buscaFornecedorOu404($id);
 
-        $data= [
+        $data = [
             'titulo' => 'Editando o fornecedor ' . esc($fornecedor->razao),
             'fornecedor' => $fornecedor
         ];
@@ -168,7 +179,7 @@ class Fornecedores extends BaseController
 
         return $this->response->setJSON($retorno);
     }
-    
+
     public function excluir(int $id = null)
     {
         $fornecedor = $this->buscaFornecedorOu404($id);
@@ -187,7 +198,7 @@ class Fornecedores extends BaseController
                 ->with('sucesso', "Fornecedor $fornecedor->razao excluído com sucesso!");
         }
 
-        $data= [
+        $data = [
             'titulo' => 'Excluindo o fornecedor' . esc($fornecedor->razao),
             'fornecedor' => $fornecedor
         ];
@@ -210,7 +221,6 @@ class Fornecedores extends BaseController
         return redirect()->back()->with('sucesso', "Fornecedor " . esc($fornecedor->razao) . " recuperado com sucesso!");
     }
 
-
     public function consultaCep()
     {
         if (!$this->request->isAJAX()) {
@@ -220,15 +230,6 @@ class Fornecedores extends BaseController
         $cep = $this->request->getGet('cep');
 
         return $this->response->setJSON($this->consultaViaCep($cep));
-    }
-
-    private function buscaFornecedorOu404(int $id = null)
-    {
-        if (!$id || !$fornecedor = $this->fornecedorModel->withDeleted(true)->find($id)){
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o fornecedor $id");
-        }
-
-        return $fornecedor;
     }
 
 }

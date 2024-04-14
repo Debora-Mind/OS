@@ -35,7 +35,7 @@ trait ValidacoesTrait
             return $retorno;
         }
 
-        if (isset($consulta->erro) && !isset($consulta->cep)){
+        if (isset($consulta->erro) && !isset($consulta->cep)) {
             session()->set('blockCep', true);
 
             $retorno['erro'] = '<span class="text-danger">Informe um CEP válido</span>';

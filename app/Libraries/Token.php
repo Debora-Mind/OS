@@ -10,8 +10,7 @@ class Token
     {
         if ($token == null) {
             $this->token = bin2hex(random_bytes(16));
-        }
-        else {
+        } else {
             $this->token = $token;
         }
     }

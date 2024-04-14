@@ -2,9 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
 use App\Models\UsuarioModel;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Password extends BaseController
 {
@@ -26,7 +24,7 @@ class Password extends BaseController
 
     public function processaEsqueci()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -46,8 +44,28 @@ class Password extends BaseController
         $this->usuarioModel->save($usuario);
 
         $this->enviaEmailRedefinicaoSenha($usuario);
-        
+
         return $this->response->setJSON([]);
+    }
+
+    private function enviaEmailRedefinicaoSenha(object $usuario): void
+    {
+        $email = service('email');
+
+        $email->setFrom('debora.almeida.de.mello@gmail.com', 'Débora Almeida');
+        $email->setTo('debora.almeida.de.mello@gmail.com');
+
+        $email->setSubject('OS | Redefinição da senha de acesso');
+
+        $data = [
+            'token' => $usuario->reset_token
+        ];
+
+        $mensagem = view('Password/reset_email', $data);
+
+        $email->setMessage($mensagem);
+
+        $email->send();
     }
 
     public function resetEnviado()
@@ -83,7 +101,7 @@ class Password extends BaseController
 
     public function processaReset()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -114,25 +132,5 @@ class Password extends BaseController
         $retorno['erros_model'] = $this->usuarioModel->errors();
 
         return $this->response->setJSON($retorno);
-    }
-
-    private  function enviaEmailRedefinicaoSenha(object $usuario): void
-    {
-        $email = service('email');
-
-        $email->setFrom('debora.almeida.de.mello@gmail.com', 'Débora Almeida');
-        $email->setTo('debora.almeida.de.mello@gmail.com');
-
-        $email->setSubject('OS | Redefinição da senha de acesso');
-
-        $data = [
-            'token' => $usuario->reset_token
-        ];
-
-        $mensagem = view('Password/reset_email', $data);
-
-        $email->setMessage($mensagem);
-
-        $email->send();
     }
 }

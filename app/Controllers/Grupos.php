@@ -2,12 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
-use App\Models\GrupoModel;
 use App\Entities\Grupo;
+use App\Models\GrupoModel;
 use App\Models\GrupoPermissaoModel;
 use App\Models\PermissaoModel;
-use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Grupos extends BaseController
 {
@@ -35,7 +34,7 @@ class Grupos extends BaseController
 
     public function recuperaGrupos()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -74,7 +73,7 @@ class Grupos extends BaseController
     {
         $grupo = new Grupo();
 
-        $data= [
+        $data = [
             'titulo' => 'Criando novo grupo de acesso',
             'grupo' => $grupo
         ];
@@ -84,7 +83,7 @@ class Grupos extends BaseController
 
     public function cadastrar()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -115,12 +114,21 @@ class Grupos extends BaseController
     {
         $grupo = $this->buscaGrupoOu404($id);
 
-        $data= [
+        $data = [
             'titulo' => 'Detalhando o grupo de acesso' . esc($grupo->nome),
             'grupo' => $grupo
         ];
 
         return view('Grupos/exibir', $data);
+    }
+
+    private function buscaGrupoOu404(int $id = null)
+    {
+        if (!$id || !$grupo = $this->grupoModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o grupo de acesso $id");
+        }
+
+        return $grupo;
     }
 
     public function editar(int $id = null)
@@ -129,10 +137,10 @@ class Grupos extends BaseController
 
         if ($grupo->id <= $this->quantidadeGruposPadroes) {
             return redirect()->back()->with('atencao', 'O grupo ' . esc($grupo->nome) .
-                ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.' );
+                ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.');
         }
 
-        $data= [
+        $data = [
             'titulo' => 'Editando o grupo' . esc($grupo->nome),
             'grupo' => $grupo
         ];
@@ -142,7 +150,7 @@ class Grupos extends BaseController
 
     public function atualizar()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -186,7 +194,7 @@ class Grupos extends BaseController
 
         if ($grupo->id <= $this->quantidadeGruposPadroes) {
             return redirect()->back()->with('atencao', 'O grupo ' . esc($grupo->nome) .
-                ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.' );
+                ' não pode ser editado ou excluído conforme descrito na exibição do mesmo.');
         }
 
         if ($grupo->deleted_at != null) {
@@ -201,7 +209,7 @@ class Grupos extends BaseController
                 ->with('sucesso', "Grupo $grupo->nome excluído com sucesso!");
         }
 
-        $data= [
+        $data = [
             'titulo' => 'Excluindo o grupo de acesso' . esc($grupo->nome),
             'grupo' => $grupo
         ];
@@ -231,7 +239,7 @@ class Grupos extends BaseController
         if ($grupo->id <= $this->quantidadeGruposPadroes) {
             return redirect()->back()->with('info',
                 'Não é necessário atribuir ou remover permissões de acesso para o grupo ' . esc($grupo->nome) .
-                        ', pois esse grupo é padrão do sistema');
+                ', pois esse grupo é padrão do sistema');
         } else {
             $grupo->permissoes = $this->grupoPermissaoModel
                 ->recuperaPermissoesDoGrupo($grupo->id, $this->quantidadePermissoesPorPagina);
@@ -249,8 +257,7 @@ class Grupos extends BaseController
             $data['permissoesDisponiveis'] = $this->PermissaoModel
                 ->whereNotIn('id', $permissoesExistentes)
                 ->findAll();
-        }
-        else {
+        } else {
             $data['permissoesDisponiveis'] = $this->PermissaoModel
                 ->findAll();
         }
@@ -260,7 +267,7 @@ class Grupos extends BaseController
 
     public function salvarPermissoes()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -290,7 +297,7 @@ class Grupos extends BaseController
 
         $permissaoPush = [];
 
-        foreach ($post['permissao_id'] as $permissao){
+        foreach ($post['permissao_id'] as $permissao) {
             $permissaoPush[] = [
                 'grupo_id' => $grupo->id,
                 'permissao_id' => $permissao
@@ -315,15 +322,6 @@ class Grupos extends BaseController
         }
 
         return redirect()->back();
-    }
-
-    private function buscaGrupoOu404(int $id = null)
-    {
-        if (!$id || !$grupo = $this->grupoModel->withDeleted(true)->find($id)){
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o grupo de acesso $id");
-        }
-
-        return $grupo;
     }
 
 }

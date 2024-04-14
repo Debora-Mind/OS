@@ -7,7 +7,7 @@ use CodeIgniter\Entity\Entity;
 
 class Usuario extends Entity
 {
-    protected $dates   = ['created_at', 'updated_at', 'deleted_at'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function exibeSituacao()
     {
@@ -17,12 +17,10 @@ class Usuario extends Entity
             $situacao = anchor("usuarios/restaurar/$this->id", $icone, ['class' => 'btn btn-sm']);
 
             return $situacao;
-        }
-        elseif ($this->ativo) {
+        } elseif ($this->ativo) {
             return '<i class="fa fa-unlock text-success"></i>&nbsp;Ativo';
-        }
-        else {
-            return '<i class="fa fa-lock text-warning"></i>&nbsp;Inativo' ;
+        } else {
+            return '<i class="fa fa-lock text-warning"></i>&nbsp;Inativo';
         }
     }
 
@@ -37,7 +35,7 @@ class Usuario extends Entity
             return true;
         }
 
-        if (empty($this->permissoes)){
+        if (empty($this->permissoes)) {
             return false;
         }
 

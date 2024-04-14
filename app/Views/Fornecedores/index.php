@@ -8,27 +8,27 @@
 
 <?= $this->section('conteudo') ?>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="block">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="block">
 
-                <a href="<?= site_url('fornecedores/criar') ?>" class="btn btn-danger mb-4">Criar novo fornecedor</a>
+            <a href="<?= site_url('fornecedores/criar') ?>" class="btn btn-danger mb-4">Criar novo fornecedor</a>
 
-                <div class="table-responsive">
-                    <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
-                        <thead>
-                            <tr>
-                                <th>Razão social</th>
-                                <th>CNPJ</th>
-                                <th>Telefone</th>
-                                <th>Situação</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
+                    <thead>
+                    <tr>
+                        <th>Razão social</th>
+                        <th>CNPJ</th>
+                        <th>Telefone</th>
+                        <th>Situação</th>
+                    </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
 <?= $this->endSection() ?>
 
@@ -68,7 +68,7 @@
             }
         }
 
-        $('#ajaxTable').DataTable( {
+        $('#ajaxTable').DataTable({
             "oLanguage": DATATABLE_PTBR,
             "ajax": "<?= site_url('fornecedores/recuperafornecedores') ?>",
             "columns": [

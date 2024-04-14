@@ -7,12 +7,13 @@ class Validacoes
      *
      * @param string $cnpj
      * @param string $error
-     * @see inspirado em https://gist.github.com/guisehn/3276302
      * @return bool
+     * @see inspirado em https://gist.github.com/guisehn/3276302
      */
-    public function validaCNPJ(string $cnpj, string &$error = null): bool {
+    public function validaCNPJ(string $cnpj, string &$error = null): bool
+    {
 
-        $cnpj = preg_replace('/[^0-9]/', '', (string) $cnpj);
+        $cnpj = preg_replace('/[^0-9]/', '', (string)$cnpj);
 
         // Valida tamanho
         if (strlen($cnpj) != 14) {

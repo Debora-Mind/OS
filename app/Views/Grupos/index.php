@@ -8,26 +8,26 @@
 
 <?= $this->section('conteudo') ?>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="block">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="block">
 
-                <a href="<?= site_url('grupos/criar') ?>" class="btn btn-danger mb-4">Criar grupo de acesso</a>
+            <a href="<?= site_url('grupos/criar') ?>" class="btn btn-danger mb-4">Criar grupo de acesso</a>
 
-                <div class="table-responsive">
-                    <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Descrição</th>
-                                <th>Situação</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Situação</th>
+                    </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
 <?= $this->endSection() ?>
 
@@ -67,7 +67,7 @@
             }
         }
 
-        $('#ajaxTable').DataTable( {
+        $('#ajaxTable').DataTable({
             "oLanguage": DATATABLE_PTBR,
             "ajax": "<?= site_url('grupos/recuperagrupos') ?>",
             "columns": [

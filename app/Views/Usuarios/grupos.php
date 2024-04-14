@@ -37,12 +37,13 @@
 
                 <?php if ($usuario->full_control == false): ?>
 
-                    <p class="contributions text-info my-0">Esse usuário já faz parte de todos os grupos disponíveis!</p>
+                    <p class="contributions text-info my-0">Esse usuário já faz parte de todos os grupos
+                        disponíveis!</p>
 
                 <?php else: ?>
 
-                <p class="contributions text-warning my-0">Esse usuário já faz parte do grupo Administrador.
-                    Para associá-lo a outros grupos, primeiro remova do grupo Administrador!</p>
+                    <p class="contributions text-warning my-0">Esse usuário já faz parte do grupo Administrador.
+                        Para associá-lo a outros grupos, primeiro remova do grupo Administrador!</p>
 
                 <?php endif; ?>
 
@@ -82,16 +83,17 @@
         <div class="user-block block">
 
             <?php if (empty($usuario->grupos)): ?>
-                <p class="contributions text-warning my-0">Esse usuário ainda não faz parte de nenhum grupo de acesso!</p>
+                <p class="contributions text-warning my-0">Esse usuário ainda não faz parte de nenhum grupo de
+                    acesso!</p>
             <?php else: ?>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
-                            <tr>
-                                <th>Grupos de acesso</th>
-                                <th>Descrição</th>
-                                <th>Excluir</th>
-                            </tr>
+                        <tr>
+                            <th>Grupos de acesso</th>
+                            <th>Descrição</th>
+                            <th>Excluir</th>
+                        </tr>
                         </thead>
                         <tbody>
                         <?php foreach ($usuario->grupos as $info): ?>
@@ -100,15 +102,16 @@
                                 <td><?= ellipsize(esc($info->descricao), 50, .5) ?></td>
                                 <td>
                                     <?php
-                                        $atributos = [
-                                            'onSubmit' => "return confirm('Tem certeza da remoção do grupo de acesso?');"
-                                        ];
+                                    $atributos = [
+                                        'onSubmit' => "return confirm('Tem certeza da remoção do grupo de acesso?');"
+                                    ];
                                     ?>
                                     <?= form_open("usuarios/removegrupo/$info->principal_id", $atributos) ?>
 
-                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button></td>
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </td>
 
-                                    <?= form_close() ?>
+                                <?= form_close() ?>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -136,7 +139,7 @@
     })
 
     $(document).ready(function () {
-        $("#form").on('submit', function (e){
+        $("#form").on('submit', function (e) {
 
             e.preventDefault()
 
@@ -148,19 +151,18 @@
                 contentType: false,
                 cache: false,
                 processData: false,
-                beforeSend: function (){
+                beforeSend: function () {
                     $('#response').html('')
                     $('#btn-salvar').val('Por favor aguarde...')
                 },
-                success: function (response){
+                success: function (response) {
                     $('#btn-salvar').val('Salvar').removeAttr('disabled')
 
                     $('[name=csrf_ordem]').val(response.token);
 
                     if (!response.erro) {
                         window.location.href = "<?= site_url("usuarios/grupos/$usuario->id"); ?>";
-                    }
-                    else {
+                    } else {
                         $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
 
                         if (response.erros_model) {
@@ -170,7 +172,7 @@
                         }
                     }
                 },
-                error: function (){
+                error: function () {
                     alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
                     $('#btn-salvar').val('Salvar').removeAttr('disabled')
                 }

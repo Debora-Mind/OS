@@ -33,16 +33,19 @@
 
             <div class="btn-group">
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
+                        aria-expanded="false">
                     Ações
                 </button>
                 <div class="dropdown-menu">
-                    <a href="<?= site_url("fornecedores/editar/$fornecedor->id") ?>" class="dropdown-item">Editar fornecedore</a>
+                    <a href="<?= site_url("fornecedores/editar/$fornecedor->id") ?>" class="dropdown-item">Editar
+                        fornecedore</a>
                     <div class="dropdown-divider"></div>
                     <?php if ($fornecedor->deleted_at == null): ?>
-                        <a href="<?= site_url("fornecedores/excluir/$fornecedor->id") ?>" class="dropdown-item">Excluir fornecedore</a>
+                        <a href="<?= site_url("fornecedores/excluir/$fornecedor->id") ?>" class="dropdown-item">Excluir
+                            fornecedore</a>
                     <?php else: ?>
-                        <a href="<?= site_url("fornecedores/restaurar/$fornecedor->id") ?>" class="dropdown-item">Restaurar fornecedore</a>
+                        <a href="<?= site_url("fornecedores/restaurar/$fornecedor->id") ?>" class="dropdown-item">Restaurar
+                            fornecedore</a>
                     <?php endif; ?>
                 </div>
             </div>
