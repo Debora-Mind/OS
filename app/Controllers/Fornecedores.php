@@ -7,6 +7,7 @@ use App\Models\FornecedorModel;
 use App\Models\FornecedorNotaFiscalModel;
 use App\Traits\ValidacoesTrait;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\I18n\Time;
 
 class Fornecedores extends BaseController
 {
@@ -235,6 +236,54 @@ class Fornecedores extends BaseController
         return view('Fornecedores/notas_fiscais', $data);
     }
 
+    public function cadastrarNotaFiscal()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $valorNota = str_replace([',', '.'], '', $post['valor_nota']);
+
+        if ($valorNota < 1){
+            $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['valor_nota' => 'O valor da nota deve ser maior que zero'];
+            return $this->response->setJSON($retorno);
+        }
+
+        $validacao = $this->validacoes();
+
+        if (!$validacao->withRequest($this->request)->run()) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo';
+            $retorno['erros_model'] = $validacao->getErrors();
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $fornecedor = $this->buscaFornecedorOu404($post['id']);
+
+        $notaFiscal = $this->request->getFile('nota_fiscal');
+        $notaFiscalCaminho = $notaFiscal->store('fornecedores/notasfiscais');
+
+        $nota = [
+            'fornecedor_id' => $fornecedor->id,
+            'nota_fiscal' => $notaFiscal->getName(),
+            'descricao_itens' => $post['descricao_itens'],
+            'valor_nota' => str_replace(',', '.', str_replace('.', '', $post['valor_nota'])),
+            'data_emissao' => $post['data_emissao'],
+            'created_at' => Time::now(),
+        ];
+
+        $this->fornecedorNotaFiscalModel->insert($nota);
+
+        session()->setFlashdata('sucesso', 'Nota fiscal cadastrada com sucesso!');
+
+        return $this->response->setJSON($retorno);
+    }
+
     public function consultaCep()
     {
         if (!$this->request->isAJAX()) {
@@ -253,6 +302,39 @@ class Fornecedores extends BaseController
         }
 
         return $fornecedor;
+    }
+
+    private function validacoes(): ?object
+    {
+        $validacao = service('validation');
+
+        $regras = [
+            'valor_nota' => 'required',
+            'data_emissao' => 'required',
+            'nota_fiscal' => 'uploaded[nota_fiscal]|max_size[nota_fiscal,5120]|ext_in[nota_fiscal,pdf]',
+            'descricao_itens' => 'required',
+        ];
+
+        $mensagens = [
+            'valor_nota' => [
+                'required' => 'Por favor insira o Valor da nota fiscal'
+            ],
+            'data_emissao' => [
+                'required' => 'Por favor insira a Data de emissão da nota'
+            ],
+            'nota_fiscal' => [
+                'max_size' => 'Por favor selecione uma nota fiscal de no máximo 5MB',
+                'uploaded' => 'Por favor escolha uma nota fiscal',
+                'ext_in' => 'Por favor escolha uma nota fiscal que seja em PDF',
+            ],
+            'descricao_itens' => [
+                'required' => 'Por favor insira uma Breve descrição dos itens da nota'
+            ],
+        ];
+
+        $validacao->setRules($regras, $mensagens);
+
+        return $validacao;
     }
 
 }

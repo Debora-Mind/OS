@@ -21,8 +21,8 @@
                 <?= form_open_multipart('/', ['id' => 'form'], ['id' => "$fornecedor->id"]) ?>
 
                 <div class="form-group col-md-12">
-                    <label class="form-control-label">Valos da nota fiscal</label>
-                    <input type="text" name="valor_nota" placeholder="Insira o valor" class="form-control"
+                    <label class="form-control-label">Valor da nota fiscal</label>
+                    <input type="text" name="valor_nota" placeholder="Insira o valor" class="form-control money"
                            value="<?= esc('') ?>">
                 </div>
                 <div class="form-group col-md-12">
@@ -33,7 +33,7 @@
                 <div class="form-group col-md-12">
                     <label class="form-control-label">Arquivo em PDF da nota fiscal</label>
                     <input type="file" name="nota_fiscal" class="form-control-file"
-                           value="<?= esc('') ?>">
+                           value="<?= esc('') ?>" accept=".pdf">
                 </div>
                 <div class="form-group col-md-12">
                     <label class="form-control-label">Breve descrição dos itens da nota fiscal</label>
@@ -75,7 +75,7 @@
                                 <td><?= $nota->data_emissao ?></td>
                                 <td><?= $nota->valor_nota ?></td>
                                 <td><?= ellipsize($nota->descricao_itens, 20, .5) ?></td>
-                                <td>
+                                <td class="text-center">
                                     <?php
                                     $atributos = [
                                         'onSubmit' => "return confirm('Tem certeza da exclusão da nota fiscal?');"
@@ -83,7 +83,9 @@
                                     ?>
                                     <?= form_open("forncedores/removenota/$nota->id", $atributos) ?>
 
-                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                    <a href="<?= site_url("fornecedores/exibirnota/$nota->nota_fiscal")?>"
+                                    class="btn btn-sm btn-outline-primary mr-2"><i class="fa fa-eye"></i></a>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>
                                 </td>
 
                                 <?= form_close() ?>
@@ -105,6 +107,8 @@
 <?= $this->section('scripts') ?>
 
 <script src="<?= site_url('recursos/vendor/loadingoverlay/loadingoverlay.min.js') ?>"></script>
+<script src="<?= site_url('recursos/vendor/mask/app.js') ?>"></script>
+<script src="<?= site_url('recursos/vendor/mask/jquery.mask.min.js') ?>"></script>
 
 <script>
     $(document).ready(function () {
@@ -154,6 +158,41 @@
             $(this).find(":submit").attr('disabled', 'disabled')
         })
     })
+</script>
+
+<!--Limita o tamanho do arquivo para 5MB-->
+<script>
+    $(document).ready(function() {
+        // Função para validar o tamanho do arquivo
+        function validarTamanhoArquivo(input) {
+            // Verificar se o navegador suporta a propriedade 'files'
+            if (input.files && input.files[0]) {
+                var tamanhoMaximo = 5 * 1024 * 1024; // 5 megabytes em bytes
+                var arquivo = input.files[0];
+
+                // Verificar o tamanho do arquivo
+                if (arquivo.size > tamanhoMaximo) {
+                    $('#response').html(
+                        '<div class="alert alert-danger alert-dimissible fade show">' +
+                        '    Verifique os erros abaixo e tente novamente' +
+                        '    <button class="close" type="button" data-dismiss="alert" aria-label="Close">' +
+                        '        <span aria-hidden="true">&times;</span>' +
+                        '    </button>' +
+                        '</div>' +
+                        '<ul class="pl-0">' +
+                        '    <span class="text-danger">Por favor selecione uma nota fiscal de no máximo 5MB</span>' +
+                        '</ul>'
+                    );
+                    $(input).val('');
+                }
+            }
+        }
+
+        // Associar evento onchange ao campo de entrada de arquivo
+        $('input[type="file"]').change(function() {
+            validarTamanhoArquivo(this);
+        });
+    });
 </script>
 
 <?= $this->endSection() ?>

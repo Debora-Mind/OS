@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use CodeIgniter\I18n\Time;
 use CodeIgniter\Model;
 
 class FornecedorNotaFiscalModel extends Model
@@ -14,6 +15,11 @@ class FornecedorNotaFiscalModel extends Model
         'descricao_itens',
         'nota_fiscal',
         'data_emissao',
+        'created_at',
     ];
+
+    // Dates
+    protected $dateFormat = 'datetime';
+    protected $createdField = 'created_at';
 
 }
