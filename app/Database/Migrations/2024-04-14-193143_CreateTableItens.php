@@ -58,10 +58,10 @@ class CreateTableItens extends Migration
             ],
             'descricao' => [
                 'type' => 'TEXT',
+                'null' => true,
             ],
             'controla_estoque' => [
                 'type' => 'BOOLEAN',
-                'null' => false
             ],
             'created_at' => [
                 'type' => 'DATETIME',
