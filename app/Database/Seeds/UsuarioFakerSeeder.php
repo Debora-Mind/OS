@@ -24,7 +24,7 @@ class UsuarioFakerSeeder extends Seeder
             'ativo' => 1,
         ];
 
-        for ($i = 0; $i < $criarQuantosUsuarios; $i++){
+        for ($i = 0; $i < $criarQuantosUsuarios; $i++) {
             $usuariosPush[] = [
                 'nome' => $faker->unique()->name,
                 'email' => $faker->unique()->email,
@@ -39,7 +39,7 @@ class UsuarioFakerSeeder extends Seeder
             ->insertBatch($usuariosPush);
 
 
-    echo "Usuário admin criados com sucesso\n";
-    echo $criarQuantosUsuarios . "usuários criados com sucesso\n";
+        echo "Usuário admin criados com sucesso\n";
+        echo $criarQuantosUsuarios . "usuários criados com sucesso\n";
     }
 }

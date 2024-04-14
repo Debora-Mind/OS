@@ -39,7 +39,15 @@ class Autenticacao
         return true;
     }
 
-    public function logout():void
+    private function logaUsuario(object $usuario): void
+    {
+        $session = session();
+        $session->regenerate();
+
+        $session->set('usuario_id', $usuario->id);
+    }
+
+    public function logout(): void
     {
         session()->destroy();
     }
@@ -56,44 +64,6 @@ class Autenticacao
         }
 
         return $this->usuario;
-    }
-
-    public function isAdmin(): bool
-    {
-        //ID Grupo Administrador = 1
-        $grupoAdmin = 1;
-        $usuarioId = session()->get('usuario_id');
-
-        $administrador = $this->grupoUsuarioModel->usuarioEstaNoGrupo($grupoAdmin, $usuarioId);
-
-        if ($administrador == null){
-            return false;
-        }
-
-        return true;
-    }
-
-    public function isCliente(): bool
-    {
-        //ID Grupo Cliente = 2
-        $grupoCliente = 2;
-        $usuarioId = session()->get('usuario_id');
-
-        $cliente = $this->grupoUsuarioModel->usuarioEstaNoGrupo($grupoCliente, $usuarioId);
-
-        if ($cliente == null){
-            return false;
-        }
-
-        return true;
-    }
-
-    private function logaUsuario(object $usuario):void
-    {
-        $session = session();
-        $session->regenerate();
-
-        $session->set('usuario_id', $usuario->id);
     }
 
     private function pegaUsuarioDaSessao()
@@ -117,10 +87,9 @@ class Autenticacao
     {
         $usuario->is_admin = $this->isAdmin();
 
-        if ($usuario->is_admin){
+        if ($usuario->is_admin) {
             $usuario->is_cliente = false;
-        }
-        else {
+        } else {
             $usuario->is_cliente = $this->isCliente();
         }
 
@@ -130,6 +99,36 @@ class Autenticacao
 
         return $usuario;
 
+    }
+
+    public function isAdmin(): bool
+    {
+        //ID Grupo Administrador = 1
+        $grupoAdmin = 1;
+        $usuarioId = session()->get('usuario_id');
+
+        $administrador = $this->grupoUsuarioModel->usuarioEstaNoGrupo($grupoAdmin, $usuarioId);
+
+        if ($administrador == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isCliente(): bool
+    {
+        //ID Grupo Cliente = 2
+        $grupoCliente = 2;
+        $usuarioId = session()->get('usuario_id');
+
+        $cliente = $this->grupoUsuarioModel->usuarioEstaNoGrupo($grupoCliente, $usuarioId);
+
+        if ($cliente == null) {
+            return false;
+        }
+
+        return true;
     }
 
     private function recuperaPermissoesDoUsuarioLogado(): array

@@ -19,7 +19,7 @@ class LoginFilter implements FilterInterface
      * redirects, etc.
      *
      * @param RequestInterface $request
-     * @param array|null       $arguments
+     * @param array|null $arguments
      *
      * @return RequestInterface|ResponseInterface|string|void
      */
@@ -27,7 +27,7 @@ class LoginFilter implements FilterInterface
     {
         $autenticacao = service('autenticacao');
 
-        if (!$autenticacao->estaLogado()){
+        if (!$autenticacao->estaLogado()) {
             return redirect()->to(site_url('login'))->with('info', 'Realize o login');
         }
     }
@@ -38,9 +38,9 @@ class LoginFilter implements FilterInterface
      * to stop execution of other after filters, short of
      * throwing an Exception or Error.
      *
-     * @param RequestInterface  $request
+     * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param array|null        $arguments
+     * @param array|null $arguments
      *
      * @return ResponseInterface|void
      */

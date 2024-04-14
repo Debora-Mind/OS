@@ -2,9 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
-
 class Login extends BaseController
 {
     public function novo()
@@ -18,7 +15,7 @@ class Login extends BaseController
 
     public function criar()
     {
-        if (!$this->request->isAJAX()){
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -39,7 +36,7 @@ class Login extends BaseController
 
         session()->setFlashdata('sucesso', "Olá $usuarioLogado->nome, que bom que está de volta!");
 
-        if ($usuarioLogado->is_cliente){
+        if ($usuarioLogado->is_cliente) {
             $retorno['redirect'] = 'ordens/minhas';
             return $this->response->setJSON($retorno);
         }

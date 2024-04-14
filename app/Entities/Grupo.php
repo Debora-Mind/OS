@@ -6,7 +6,7 @@ use CodeIgniter\Entity\Entity;
 
 class Grupo extends Entity
 {
-    protected $dates   = ['created_at', 'updated_at', 'deleted_at'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function exibeSituacao()
     {
@@ -16,12 +16,10 @@ class Grupo extends Entity
             $situacao = anchor("grupos/restaurar/$this->id", $icone, ['class' => 'btn btn-sm']);
 
             return $situacao;
-        }
-        elseif ($this->tecnico) {
+        } elseif ($this->tecnico) {
             return '<i class="fa fa-eye text-secondary"></i>&nbsp;Técnico';
-        }
-        else {
-            return '<i class="fa fa-eye-slash text-danger"></i>&nbsp;Não técnico' ;
+        } else {
+            return '<i class="fa fa-eye-slash text-danger"></i>&nbsp;Não técnico';
         }
     }
 }

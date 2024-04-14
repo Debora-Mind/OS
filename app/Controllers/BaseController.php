@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use finfo;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -60,7 +61,7 @@ abstract class BaseController extends Controller
     {
         $path = WRITEPATH . "uploads/$destino/$arquivo";
 
-        $fileInfo = new \finfo(FILEINFO_MIME);
+        $fileInfo = new finfo(FILEINFO_MIME);
         $fileType = $fileInfo->file($path);
         $fileSize = filesize($path);
 
