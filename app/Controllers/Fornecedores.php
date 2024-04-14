@@ -284,6 +284,16 @@ class Fornecedores extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function exibirNota(string $nota = null)
+    {
+        if ($nota === null){
+            return redirect()->to(site_url('fornecedores'))->with('atencao', "Mão encontramos a nota fiscal $nota");
+        }
+
+        $this->exibeArquivo('fornecedores/notasfiscais', $nota);
+
+    }
+
     public function consultaCep()
     {
         if (!$this->request->isAJAX()) {
