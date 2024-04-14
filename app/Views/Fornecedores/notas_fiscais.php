@@ -53,6 +53,51 @@
         </div>
 
     </div>
+    <div class="col-lg-8">
+        <div class="user-block block">
+
+            <?php if (empty($fornecedor->notas_fiscais)): ?>
+                <p class="contributions text-warning my-0">Esse fornecedor ainda não possui notas fiscais!</p>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th>Data de emissão</th>
+                            <th>Valor da nota</th>
+                            <th>Descrição dos itens</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($fornecedor->notas_fiscais as $nota): ?>
+                            <tr>
+                                <td><?= $nota->data_emissao ?></td>
+                                <td><?= $nota->valor_nota ?></td>
+                                <td><?= ellipsize($nota->descricao_itens, 20, .5) ?></td>
+                                <td>
+                                    <?php
+                                    $atributos = [
+                                        'onSubmit' => "return confirm('Tem certeza da exclusão da nota fiscal?');"
+                                    ];
+                                    ?>
+                                    <?= form_open("forncedores/removenota/$nota->id", $atributos) ?>
+
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </td>
+
+                                <?= form_close() ?>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <div class="mt-3 ml-1"><?= $fornecedor->pager->links() ?></div>
+                </div>
+            <?php endif; ?>
+
+        </div>
+
+    </div>
 </div>
 
 <?= $this->endSection() ?>
@@ -60,13 +105,9 @@
 <?= $this->section('scripts') ?>
 
 <script src="<?= site_url('recursos/vendor/loadingoverlay/loadingoverlay.min.js') ?>"></script>
-<script src="<?= site_url('recursos/vendor/mask/app.js') ?>"></script>
-<script src="<?= site_url('recursos/vendor/mask/jquery.mask.min.js') ?>"></script>
 
 <script>
     $(document).ready(function () {
-
-        <?= $this->include('Fornecedores/_viacep') ?>
 
         $("#form").on('submit', function (e) {
 
@@ -74,7 +115,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '<?= site_url('fornecedores/atualizar') ?>',
+                url: '<?= site_url('fornecedores/cadastrarnotafiscal') ?>',
                 data: new FormData(this),
                 dataType: 'json',
                 contentType: false,
@@ -90,12 +131,7 @@
                     $('[name=csrf_ordem]').val(response.token);
 
                     if (!response.erro) {
-
-                        if (response.info) {
-                            $('#response').html('<div class="alert alert-info">' + response.info + '</div>');
-                        } else {
-                            window.location.href = "<?= site_url("fornecedores/exibir/$fornecedor->id"); ?>"
-                        }
+                        window.location.href = "<?= site_url("fornecedores/exibir/$fornecedor->id"); ?>"
                     } else {
                         $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
 
