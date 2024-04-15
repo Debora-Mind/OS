@@ -49,6 +49,23 @@ class ItemModel extends Model
         ],
     ];
 
+    protected $beforeInsert = ['removeVirgulaValores'];
+    protected $beforeUpdate = ['removeVirgulaValores'];
+
+    protected function removeVirgulaValores(array $data)
+    {
+        if (isset($data['data']['preco_custo'])) {
+            $data['data']['preco_custo'] = str_replace('.', '', $data['data']['preco_custo']);
+            $data['data']['preco_custo'] = str_replace(',', '.', $data['data']['preco_custo']);
+        }
+        if (isset($data['data']['preco_venda'])) {
+            $data['data']['preco_venda'] = str_replace('.', '', $data['data']['preco_venda']);
+            $data['data']['preco_venda'] = str_replace(',', '.', $data['data']['preco_venda']);
+        }
+
+        return $data;
+    }
+
     public function geraCodigoInternoItem(): string
     {
         do {
