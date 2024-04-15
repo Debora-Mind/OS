@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\ItemModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Itens extends BaseController
@@ -66,4 +67,24 @@ class Itens extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function exibir(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        $data = [
+            'titulo' => 'Detalhando o item ' . esc($item->nome),
+            'item' => $item
+        ];
+
+        return view('Itens/exibir', $data);
+    }
+
+    private function buscaItemOu404(int $id = null)
+    {
+        if (!$id || !$item = $this->itemModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o item $id");
+        }
+
+        return $item;
+    }
 }
