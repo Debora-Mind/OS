@@ -6,6 +6,8 @@ use App\Controllers\BaseController;
 use App\Models\ItemModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class Itens extends BaseController
 {
@@ -37,7 +39,8 @@ class Itens extends BaseController
             'tipo',
             'estoque',
             'preco_venda',
-            'ativo'
+            'ativo',
+            'deleted_at'
         ];
 
         $itens = $this->itemModel->select($atributos)
@@ -77,6 +80,17 @@ class Itens extends BaseController
         ];
 
         return view('Itens/exibir', $data);
+    }
+
+    public function codigoBarras(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        $generator = new BarcodeGeneratorSVG();
+        $item->codigo_barras = $generator
+            ->getBarcode($item->codigo_interno, $generator::TYPE_CODE_128, 3, 80);
+
+        echo $item->codigo_barras;
     }
 
     private function buscaItemOu404(int $id = null)

@@ -33,9 +33,22 @@
             <hr class="border-secondary">
 
             <h5 class="card-title mt-2"><?= esc($item->nome) ?></h5>
-            <p class="contributions mt-0"><?= $item->exibeTipo() ?></p>
-            <p class="contributions mt-0">Estoque: <?= $item->exibeEstoque() ?></p>
-            <p class="contributions mt-0"><?= $item->exibeSituacao() ?></p>
+            <div class="row justify-content-sm-start">
+                <div class="d-flex align-items-center">
+                    <p class="contributions mt-0 ml-3 px-4"><?= $item->exibeTipo() ?></p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <p class="contributions mt-0 ml-1 px-4">Estoque: <?= $item->exibeEstoque() ?></p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <p class="contributions mt-0 ml-1 px-4"><?= $item->exibeSituacao() ?></p>
+                </div>
+            </div>
+
+            <p class="contributions mt-0">
+                <a target="_blank" class="btn btn-sm" href="<?= site_url("itens/codigobarras/$item->id") ?>">
+                    Ver código de barras do item</a>
+            </p>
 
             <?php if ($item->marca): ?>
                 <p class="card-text"><b>Marca </b><?= esc($item->marca) ?></p>
