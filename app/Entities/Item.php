@@ -11,9 +11,9 @@ class Item extends Entity
     public function exibeSituacao()
     {
         if ($this->deleted_at !== null) {
-            $icone = '<span class="text-white">Excluído</span>&nbsp;<i class="fa fa-undo"></i>&nbsp;Desfazer';
+            $icone = '<span class="text-white">Excluído</span>&nbsp;<i class="fa fa-undo"></i>';
 
-            $situacao = anchor("itens/restaurar/$this->id", $icone, ['class' => 'btn btn-sm']);
+            $situacao = anchor("itens/restaurar/$this->id", $icone, ['class' => 'btn btn-sm p-0']);
 
             return $situacao;
         } elseif ($this->ativo) {
