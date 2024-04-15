@@ -90,7 +90,12 @@ class Itens extends BaseController
         $item->codigo_barras = $generator
             ->getBarcode($item->codigo_interno, $generator::TYPE_CODE_128, 3, 80);
 
-        echo $item->codigo_barras;
+        $data = [
+            'titulo' => 'Código de barras do item',
+            'item' => $item
+        ];
+
+        return view('Itens/codigo_barras', $data);
     }
 
     private function buscaItemOu404(int $id = null)
