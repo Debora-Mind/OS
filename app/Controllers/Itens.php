@@ -82,6 +82,18 @@ class Itens extends BaseController
         return view('Itens/exibir', $data);
     }
 
+    public function editar(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        $data = [
+            'titulo' => 'Editando o item ' . esc($item->nome) . ' ' . $item->exibeTipo(),
+            'item' => $item
+        ];
+
+        return view('Itens/editar', $data);
+    }
+
     public function codigoBarras(int $id = null)
     {
         $item = $this->buscaItemOu404($id);
