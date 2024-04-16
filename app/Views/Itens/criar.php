@@ -46,6 +46,18 @@
 
 <script>
     $(document).ready(function () {
+
+        // Oculta propriedades do produto quando o item for do tipo serviço
+        $("[name=tipo]").on('click', function () {
+            if ($(this).val() === 'serviço') {
+                $('.produto').hide('slow')
+                $(".produto").prop("disabled", true)
+            } else {
+                $('.produto').show('slow')
+                $(".produto").prop("disabled", false)
+            }
+        })
+
         $("#form").on('submit', function (e) {
 
             e.preventDefault()
