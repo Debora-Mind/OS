@@ -160,8 +160,9 @@ class Itens extends BaseController
         $item = $this->buscaItemOu404($id);
 
         $generator = new BarcodeGeneratorSVG();
+        $item->codigo_interno = (empty($item->codigo_interno) || !$item->codigo_interno) ? '0' : $item->codigo_interno ;
         $item->codigo_barras = $generator
-            ->getBarcode($item->codigo_interno, $generator::TYPE_CODE_128, 3, 80);
+            ->getBarcode($item->codigo_interno , $generator::TYPE_CODE_128, 3, 80);
 
         $data = [
             'titulo' => 'Código de barras do item',
