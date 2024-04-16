@@ -12,25 +12,28 @@
 
     <div class="col-lg-4">
         <div class="user-block block">
-            <div class="text-center">
 
-                <?php if ($item->imagem == null): ?>
+            <?php if ($item->tipo === 'produto'): ?>
+                <div class="text-center">
 
-                    <img src="<?= site_url('recursos/img/item_sem_imagem.png') ?>" alt="Item sem imagem"
-                         class="card-img-top" style="width: 90%">
+                    <?php if ($item->imagem == null): ?>
 
-                <?php else: ?>
+                        <img src="<?= site_url('recursos/img/item_sem_imagem.png') ?>" alt="Item sem imagem"
+                             class="card-img-top" style="width: 90%">
 
-                    <img src="<?= site_url("itens/imagem/$item->imagem") ?>" alt="<?= $item->nome ?>"
-                         class="card-img-top" style="width: 90%">
+                    <?php else: ?>
 
-                <?php endif; ?>
+                        <img src="<?= site_url("itens/imagem/$item->imagem") ?>" alt="<?= $item->nome ?>"
+                             class="card-img-top" style="width: 90%">
 
-                <a href="<?= site_url("itens/editarimagem/$item->id") ?>"
-                   class="btn btn-outline-primary btn-sm mt-3">Alterar imagem</a>
-            </div>
+                    <?php endif; ?>
 
-            <hr class="border-secondary">
+                    <a href="<?= site_url("itens/editarimagem/$item->id") ?>"
+                       class="btn btn-outline-primary btn-sm mt-3">Alterar imagem</a>
+                </div>
+
+                <hr class="border-secondary">
+            <?php endif; ?>
 
             <h5 class="card-title mt-2"><?= esc($item->nome) ?></h5>
             <div class="row justify-content-sm-start">
