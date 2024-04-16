@@ -1,17 +1,17 @@
 <div class="row">
 
-    <?php if ($item->id): ?>
+    <?php if ($item->id === false): ?>
     <div class="col md-4 mb-4">
         <label for="">Este é um item do tipo:</label>
         <div class="custom-control custom-radio mb-2">
-            <input type="radio" class="custom-control-input" id="produto" name="radio-stacked" checked>
+            <input type="radio" class="custom-control-input" id="produto" name="tipo" value="produto" checked>
             <label for="produto" class="custom-control-label">
-                <i class="fa fa-archive text-success" aria-hidden="true"></i>&nbsp;Produto</label>
+                <i class="fa fa-archive text-success" aria-hidden="true"></i>&nbsp;Novo produto</label>
         </div>
         <div class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" id="servico" name="radio-stacked">
+            <input type="radio" class="custom-control-input" id="servico" name="tipo" value="serviço">
             <label for="servico" class="custom-control-label">
-                <i class="fa fa-wrench text-white" aria-hidden="true"></i>&nbsp;Serviço</label>
+                <i class="fa fa-wrench text-white" aria-hidden="true"></i>&nbsp;Novo serviço</label>
         </div>
     </div>
     <?php endif; ?>
@@ -52,12 +52,6 @@
         <label class="form-control-label">Descrição</label>
         <textarea name="descricao" placeholder="Insira a descrição" class="form-control" rows="5"
         ><?= esc($item->descricao) ?></textarea>
-    </div>
-
-    <div class="form-group col-md-2">
-        <label class="form-control-label">Tipo</label>
-        <input type="text" name="tipo" placeholder="Tipo" class="form-control"
-               value="<?= esc($item->tipo) ?>">
     </div>
 
 </div>

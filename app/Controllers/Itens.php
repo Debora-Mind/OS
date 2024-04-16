@@ -110,6 +110,56 @@ class Itens extends BaseController
         return view('Itens/codigo_barras', $data);
     }
 
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $item = $this->buscaItemOu404($post['id']);
+
+        $item->fill($post);
+
+        if (!$item->hasChanged()) {
+            $retorno['info'] = 'Não há dados para serem atualizados';
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($item->tipo === 'produto') {
+            if ($item->estoque === "") {
+                $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
+                $retorno['erros_model'] = ['estoque' =>
+                    'Para um item do tipo <b class="text-white">Produto</b>, é necessário informar a quantidade em estoque'];
+                return $this->response->setJSON($retorno);
+            }
+        }
+
+        $precoCusto = str_replace(['.', ','], '', $item->preco_custo);
+        $precoVenda = str_replace(['.', ','], '', $item->preco_venda);
+
+        if ($precoCusto > $precoVenda) {
+            $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['estoque' =>
+                'O preço de venda <b class="text-white">não pode ser menor</b> do que o preço de custo'];
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->itemModel->protect(false)->save($item)) {
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->itemModel->errors();
+
+        return $this->response->setJSON($retorno);
+    }
+
     private function buscaItemOu404(int $id = null)
     {
         if (!$id || !$item = $this->itemModel->withDeleted(true)->find($id)) {

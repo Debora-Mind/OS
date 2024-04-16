@@ -43,6 +43,7 @@ class Item extends Entity
     {
         return 'R$&nbsp;' . esc(str_replace('.', ',', $this->preco_venda));
     }
+
     public function precoCustoFormatado()
     {
         return 'R$&nbsp;' . esc(str_replace('.', ',', $this->preco_custo));
