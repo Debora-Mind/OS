@@ -1,6 +1,6 @@
 <div class="row">
 
-    <?php if ($item->id === false): ?>
+    <?php if ($item->id === null): ?>
     <div class="col md-4 mb-4">
         <label for="">Este é um item do tipo:</label>
         <div class="custom-control custom-radio mb-2">
@@ -21,24 +21,24 @@
         <input type="text" name="nome" placeholder="Insira o nome do item" class="form-control"
                value="<?= esc($item->nome) ?>">
     </div>
-    <div class="form-group col-md-4">
+    <div class="produto form-group col-md-4">
         <label class="form-control-label">Marca</label>
         <input type="text" name="marca" placeholder="Insira a marca do item" class="form-control"
                value="<?= esc($item->marca) ?>">
     </div>
-    <div class="form-group col-md-4">
+    <div class="produto form-group col-md-4">
         <label class="form-control-label">Modelo</label>
         <input type="text" name="modelo" placeholder="Insira o Modelo do item" class="form-control"
                value="<?= esc($item->modelo) ?>">
     </div>
-    <div class="form-group col-md-4">
+    <div class="produto form-group col-md-4">
         <label class="form-control-label">Estoque</label>
         <input type="number" name="estoque" placeholder="Insira a quantidade em estoque" class="form-control"
                value="<?= esc($item->estoque) ?>">
     </div>
 </div>
 <div class="row">
-    <div class="form-group col-md-4">
+    <div class="produto form-group col-md-4">
         <label class="form-control-label">Preço de custo</label>
         <input type="text" name="preco_custo" placeholder="Valor de custo" class="form-control money"
                value="<?= esc($item->preco_custo) ?>">
@@ -48,14 +48,14 @@
         <input type="text" name="preco_venda" placeholder="Valor de venda" class="form-control money"
                value="<?= esc($item->preco_venda) ?>">
     </div>
-    <div class="form-group col-md-8">
+    <div class="form-group col-md-12">
         <label class="form-control-label">Descrição</label>
         <textarea name="descricao" placeholder="Insira a descrição" class="form-control" rows="5"
         ><?= esc($item->descricao) ?></textarea>
     </div>
 
 </div>
-<div class="custom-control custom-checkbox">
+<div class="produto custom-control custom-checkbox">
     <input type="hidden" name="controla_estoque" value="0">
     <input type="checkbox" class="custom-control-input" value="1" name="controla_estoque"
            id="controla_estoque" <?= $item->controla_estoque == true ? 'checked' : '' ?>>
