@@ -64,7 +64,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '<?= site_url('itens/atualizar') ?>',
+                url: '<?= site_url('itens/cadastrar') ?>',
                 data: new FormData(this),
                 dataType: 'json',
                 contentType: false,
@@ -84,7 +84,7 @@
                         if (response.info) {
                             $('#response').html('<div class="alert alert-info">' + response.info + '</div>');
                         } else {
-                            window.location.href = "<?= site_url("itens/exibir/$item->id"); ?>"
+                            window.location.href = "<?= site_url("itens/exibir/"); ?>" + response.id
                         }
                     } else {
                         $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');

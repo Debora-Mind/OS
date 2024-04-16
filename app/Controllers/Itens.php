@@ -94,6 +94,37 @@ class Itens extends BaseController
         $post = $this->request->getPost();
 
         $item = new Item($post);
+        $item->codigo_interno = $this->itemModel->geraCodigoInternoItem();
+
+        if ($item->tipo === 'produto') {
+            if ($item->marca === "" || $item->marca === null) {
+                $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
+                $retorno['erros_model'] = ['estoque' =>
+                    'Para um item do tipo <b class="text-white">Produto</b>, é necessário informar a marca do mesmo'];
+                return $this->response->setJSON($retorno);
+            }
+
+            if ($item->estoque === "") {
+                $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
+                $retorno['erros_model'] = ['estoque' =>
+                    'Para um item do tipo <b class="text-white">Produto</b>, é necessário informar a quantidade em estoque'];
+                return $this->response->setJSON($retorno);
+            }
+        }
+
+        if ($item->tipo === 'serviço') {
+            $item->removeCamposServico();
+        }
+
+        $precoCusto = str_replace(['.', ','], '', $item->preco_custo);
+        $precoVenda = str_replace(['.', ','], '', $item->preco_venda);
+
+        if ($precoCusto > $precoVenda) {
+            $retorno['erro'] = 'Verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['estoque' =>
+                'O preço de venda <b class="text-white">não pode ser menor</b> do que o preço de custo'];
+            return $this->response->setJSON($retorno);
+        }
 
         if ($this->itemModel->protect(false)->insert($item)) {
 
@@ -124,18 +155,6 @@ class Itens extends BaseController
         return view('Itens/exibir', $data);
     }
 
-    public function editar(int $id = null)
-    {
-        $item = $this->buscaItemOu404($id);
-
-        $data = [
-            'titulo' => 'Editando o item ' . esc($item->nome) . ' ' . $item->exibeTipo(),
-            'item' => $item
-        ];
-
-        return view('Itens/editar', $data);
-    }
-
     public function codigoBarras(int $id = null)
     {
         $item = $this->buscaItemOu404($id);
@@ -150,6 +169,18 @@ class Itens extends BaseController
         ];
 
         return view('Itens/codigo_barras', $data);
+    }
+
+    public function editar(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        $data = [
+            'titulo' => 'Editando o item ' . esc($item->nome) . ' ' . $item->exibeTipo(),
+            'item' => $item
+        ];
+
+        return view('Itens/editar', $data);
     }
 
     public function atualizar()

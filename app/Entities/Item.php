@@ -48,4 +48,13 @@ class Item extends Entity
     {
         return 'R$&nbsp;' . esc(str_replace('.', ',', $this->preco_custo));
     }
+
+    public function removeCamposServico()
+    {
+        unset($this->marca);
+        unset($this->modelo);
+        unset($this->preco_custo);
+        unset($this->estoque);
+        unset($this->controla_estoque);
+    }
 }
