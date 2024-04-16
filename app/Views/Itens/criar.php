@@ -10,7 +10,7 @@
 
 <div class="row">
 
-    <div class="col-lg-8">
+    <div class="col-lg-10">
         <div class="block">
             <div class="block-body">
 
@@ -26,7 +26,7 @@
 
                     <input id="btn-salvar" type="submit" class="btn btn-danger btn-sm mr-2" value="Salvar">
 
-                    <a href="<?= site_url("itens/exibir/$item->id") ?>" class="btn btn-secondary btn-sm ml-2">Voltar</a>
+                    <a href="<?= site_url("itens") ?>" class="btn btn-secondary btn-sm ml-2">Voltar</a>
                 </div>
 
                 <?= form_close() ?>
@@ -44,17 +44,8 @@
 <script src="<?= site_url('recursos/vendor/mask/app.js') ?>"></script>
 <script src="<?= site_url('recursos/vendor/mask/jquery.mask.min.js') ?>"></script>
 
-<?php if ($item->tipo === 'serviço'): ?>
-
-    <script>
-        $(".produto").addClass('d-none')
-    </script>
-
-<?php endif; ?>
-
 <script>
     $(document).ready(function () {
-
         $("#form").on('submit', function (e) {
 
             e.preventDefault()
