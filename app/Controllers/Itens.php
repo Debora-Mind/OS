@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Entities\Item;
 use App\Models\ItemHistoricoModel;
+use App\Models\ItemImagemModel;
 use App\Models\ItemModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -15,11 +16,13 @@ class Itens extends BaseController
 {
     private $itemModel;
     private $itemHistoricoModel;
+    private $itemImagemModel;
 
     public function __construct()
     {
         $this->itemModel = new ItemModel();
         $this->itemHistoricoModel = new ItemHistoricoModel();
+        $this->itemImagemModel = new ItemImagemModel();
     }
 
     public function index()
@@ -240,6 +243,24 @@ class Itens extends BaseController
         $retorno['erros_model'] = $this->itemModel->errors();
 
         return $this->response->setJSON($retorno);
+    }
+
+    public function editarImagem(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        if ($item->tipo === 'serviço') {
+            return redirect()->back()->with('info', "Você poderá alterar as imagens apenas de um item do tipo Produto");
+        }
+
+        $item->imagens = $this->itemImagemModel->where('item_id', $item->id)->findAll();
+
+        $data = [
+            'titulo' => 'Gerenciando as imagens do item',
+            'item' => $item,
+        ];
+
+        return view('Itens/editar_imagem', $data);
     }
 
     private function buscaItemOu404(int $id = null)
