@@ -97,6 +97,52 @@
         </div>
 
     </div>
+    <div class="col-lg-8">
+        <div class="user-block block">
+
+            <div>
+                <h5 class="card-title mt-2">Histórico de alterações do item</h5>
+
+                <?php if (isset($item->historico) === false): ?>
+
+                <p class="contributions text-warning">Item não possui histórico de alterações</p>
+
+                <?php else: ?>
+
+                    <?php foreach ($item->historico as $key => $historico): ?>
+
+                    <div id="accordion">
+                        <div class="card">
+                            <div class="card-header" id="heading-<?= $key ?>">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-<?= $key ?>"
+                                    aria-expanded="false" aria-controls="collapseOne">
+                                        Em <?= date('d/m/Y H:i', strtotime($historico['created_at'])) ?>
+                                    </button>
+                                </h5>
+                            </div>
+
+                            <div class="collapse <?= $key === 0 ? 'show' : '' ?>" id="collapse-<?= $key ?>"
+                                 aria-labelledby="heading-<?= $key ?>" data-parent="#accordion">
+                                <div class="card-body">
+                                    <?php foreach ($historico['atributos_alterados'] as $evento): ?>
+                                        <p class="my-0"><?= $evento ?> </p>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 <?= $this->endSection() ?>

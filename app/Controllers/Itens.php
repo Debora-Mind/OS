@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Entities\Item;
+use App\Models\ItemHistoricoModel;
 use App\Models\ItemModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -13,10 +14,12 @@ use Picqer\Barcode\BarcodeGeneratorSVG;
 class Itens extends BaseController
 {
     private $itemModel;
+    private $itemHistoricoModel;
 
     public function __construct()
     {
         $this->itemModel = new ItemModel();
+        $this->itemHistoricoModel = new ItemHistoricoModel();
     }
 
     public function index()
@@ -147,6 +150,8 @@ class Itens extends BaseController
     {
         $item = $this->buscaItemOu404($id);
 
+        $item->historico = $this->buscaHistoricoItem($item);
+
         $data = [
             'titulo' => 'Detalhando o item ' . esc($item->nome),
             'item' => $item
@@ -223,6 +228,11 @@ class Itens extends BaseController
         }
 
         if ($this->itemModel->protect(false)->save($item)) {
+
+            $historico = $this->persisteHistoricoItem($item);
+
+            $this->itemHistoricoModel->insert($historico);
+
             session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
 
             return $this->response->setJSON($retorno);
@@ -241,5 +251,41 @@ class Itens extends BaseController
         }
 
         return $item;
+    }
+
+    private function buscaHistoricoItem($item)
+    {
+        $atributos = [
+            'acao',
+            'atributos_alterados',
+            'created_at',
+        ];
+
+        $historicoItem = $this->itemHistoricoModel
+            ->select($atributos)
+            ->where('item_id', $item->id)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
+        if ($historicoItem != null) {
+            foreach ($historicoItem as $key => $hist) {
+                $historicoItem[$key]['atributos_alterados'] = unserialize($hist['atributos_alterados']);
+            }
+
+            return $historicoItem;
+        }
+    }
+
+    private function persisteHistoricoItem($item): array
+    {
+        $item->formataValorParaDB();
+
+        return [
+            'usuario_id' => usuario_logado()->id,
+            'item_id' => $item->id,
+            'acao' => 'Atualização',
+            'atributos_alterados' => $item->recuperaAtributosAlterados(),
+        ];
+
     }
 }
