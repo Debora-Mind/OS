@@ -229,9 +229,7 @@ class Itens extends BaseController
 
         if ($this->itemModel->protect(false)->save($item)) {
 
-            $historico = $this->persisteHistoricoItem($item);
-
-            $this->itemHistoricoModel->insert($historico);
+            $this->persisteHistoricoItem($item, 'Atualizado');
 
             session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
 
@@ -256,13 +254,16 @@ class Itens extends BaseController
     private function buscaHistoricoItem($item)
     {
         $atributos = [
+            'usuario_id',
+            'usuarios.nome as usuario_nome',
             'acao',
             'atributos_alterados',
-            'created_at',
+            'itens_historico.created_at',
         ];
 
         $historicoItem = $this->itemHistoricoModel
             ->select($atributos)
+            ->join('usuarios', 'itens_historico.usuario_id = usuarios.id')
             ->where('item_id', $item->id)
             ->orderBy('created_at', 'DESC')
             ->findAll();
@@ -276,16 +277,17 @@ class Itens extends BaseController
         }
     }
 
-    private function persisteHistoricoItem($item): array
+    private function persisteHistoricoItem($item, string $acao)
     {
         $item->formataValorParaDB();
 
-        return [
+        $historico = [
             'usuario_id' => usuario_logado()->id,
             'item_id' => $item->id,
-            'acao' => 'Atualização',
+            'acao' => $acao,
             'atributos_alterados' => $item->recuperaAtributosAlterados(),
         ];
 
+        $this->itemHistoricoModel->insert($historico);
     }
 }

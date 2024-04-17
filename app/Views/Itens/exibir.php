@@ -112,19 +112,21 @@
                     <?php foreach ($item->historico as $key => $historico): ?>
 
                     <div id="accordion">
-                        <div class="card">
+                        <div class="card my-1">
                             <div class="card-header" id="heading-<?= $key ?>">
                                 <h5 class="mb-0">
-                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-<?= $key ?>"
-                                    aria-expanded="false" aria-controls="collapseOne">
-                                        Em <?= date('d/m/Y H:i', strtotime($historico['created_at'])) ?>
-                                    </button>
+                                    <p class="btn-link small my-0" data-toggle="collapse" data-target="#collapse-<?= $key ?>"
+                                            aria-expanded="true" aria-controls="collapse-<?= $key ?>" style="word-break: break-all;">
+                                        <?= $historico['acao'] ?>
+                                        em <?= date('d/m/Y H:i', strtotime($historico['created_at'])) ?>
+                                        por <?= $historico['usuario_nome'] ?> (id <?= $historico['usuario_id'] ?>)
+                                    </p>
                                 </h5>
                             </div>
 
-                            <div class="collapse <?= $key === 0 ? 'show' : '' ?>" id="collapse-<?= $key ?>"
+                            <div class="collapse <?= $key == 0 ? 'show' : '' ?>" id="collapse-<?= $key ?>"
                                  aria-labelledby="heading-<?= $key ?>" data-parent="#accordion">
-                                <div class="card-body">
+                                <div class="card-body py-2">
                                     <?php foreach ($historico['atributos_alterados'] as $evento): ?>
                                         <p class="my-0"><?= $evento ?> </p>
                                     <?php endforeach; ?>
