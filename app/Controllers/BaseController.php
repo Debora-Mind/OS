@@ -77,4 +77,11 @@ abstract class BaseController extends Controller
 
         exit();
     }
+
+    protected function debugAjax($objeto)
+    {
+        echo '<pre>';
+        print_r($objeto);
+        exit('Fim');
+    }
 }

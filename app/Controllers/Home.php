@@ -20,4 +20,13 @@ class Home extends BaseController
         $usuario = $autenticacao->pegaUsuarioLogado();
 
     }
+
+    public function teste()
+    {
+        $data = [
+            'titulo' => 'Teste'
+        ];
+
+        return view('teste', $data);
+    }
 }
