@@ -14,6 +14,13 @@
         <div class="block">
             <div class="block-body">
 
+                <?php if (count($item->imagens) >= 10): ?>
+
+                    <p class="contributions text-warning my-0">Esse item já possui as 10 imagens permitidas. <br>
+                        Para adicionar mais, precisa remover as imagens atuais.
+                    </p>
+
+                <?php else: ?>
                 <div id="response">
                     <!-- Retornos -->
                 </div>
@@ -34,19 +41,50 @@
 
                 <?= form_close() ?>
 
+                <?php endif; ?>
+
             </div>
         </div>
 
     </div>
+
     <div class="col-lg-7">
         <div class="user-block block">
 
             <?php if (empty($item->imagens)): ?>
                 <p class="contributions text-warning my-0">Esse item ainda não possui nenhuma imagem</p>
             <?php else: ?>
-                
-                Tem imagem
-            
+
+                <ul class="listi-inline text-center p-0 m-0">
+
+                    <?php foreach ($item->imagens as $imagem): ?>
+                        <li class="list-inline-item">
+                            <div class="card" style="width: 10rem">
+                                <img class="card-img-top" src="<?= site_url("itens/imagem/$imagem->imagem") ?>"
+                                     alt="Imagem do produto <?= esc($item->nome) ?>">
+                                <div class="card-body text-center py-2">
+
+                                    <?php
+                                        $atributos = [
+                                                'onSubmit' => "return confirm('Tem certeza da exclusão da imagem?')",
+                                        ]
+                                    ?>
+
+                                    <?= form_open("itens/removeimagem/$imagem->imagem", $atributos) ?>
+
+                                        <button class="btn btn-sm btn-danger">Excluir</button>
+
+                                    <?= form_close() ?>
+
+                                </div>
+                            </div>
+                        </li>
+
+                    <?php endforeach; ?>
+
+                </ul>
+
+
             <?php endif; ?>
 
         </div>

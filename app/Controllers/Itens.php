@@ -9,6 +9,7 @@ use App\Models\ItemImagemModel;
 use App\Models\ItemModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
+use Config\Services;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Picqer\Barcode\BarcodeGeneratorSVG;
 
@@ -256,11 +257,78 @@ class Itens extends BaseController
         $item->imagens = $this->itemImagemModel->where('item_id', $item->id)->findAll();
 
         $data = [
-            'titulo' => 'Gerenciando as imagens do item',
+            'titulo' => "Gerenciando as imagens do produto $item->nome",
             'item' => $item,
         ];
 
         return view('Itens/editar_imagem', $data);
+    }
+
+    public function upload()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $validacao = $this->validarImagem();
+
+        if (!$validacao->withRequest($this->request)->run()) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo';
+            $retorno['erros_model'] = $validacao->getErrors();
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $post = $this->request->getPost();
+
+        $item = $this->buscaItemOu404($post['id']);
+
+        $quantidaDeImagens = $this->defineQuantidadeImagens($item->id);
+
+        if ($quantidaDeImagens['total'] > 10) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo';
+            $retorno['erros_model'] = ['total_imagens' => "O produto pode ter no máximo 10 imagens. "
+                . $quantidaDeImagens['mensagem']];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $imagens = $this->request->getFiles('imagens');
+
+        foreach ($imagens['imagens'] as $imagem) {
+            list($largura, $altura) = getimagesize($imagem->getPathName());
+
+            if ($largura < "300" || $altura < "300") {
+                $retorno['erro'] = 'Por favor verifique os erros abaixo';
+                $retorno['erros_model'] = ['dimensao' => 'A imagem não pode ser menor do que 300 x 300 pixels'];
+
+                return $this->response->setJSON($retorno);
+            }
+        }
+
+        $arrayImagens = [];
+
+        foreach ($imagens['imagens'] as $imagem) {
+            $caminhoImagem = $imagem->store('itens');
+            $caminhoImagem = WRITEPATH . "uploads/$caminhoImagem";
+
+            $this->manipulaImagem($caminhoImagem, $item->id);
+
+            $arrayImagens[] = [
+                'item_id' => $item->id,
+                'imagem' => $imagem->getName(),
+            ];
+        }
+
+//        $this->removeImagemDoFileSystem($item);
+
+        $this->itemImagemModel->insertBatch($arrayImagens);
+
+        session()->setFlashdata('sucesso', 'Imagens salvas com sucesso');
+
+        return $this->response->setJSON($retorno);
     }
 
     private function buscaItemOu404(int $id = null)
@@ -310,5 +378,88 @@ class Itens extends BaseController
         ];
 
         $this->itemHistoricoModel->insert($historico);
+    }
+
+    public function validarImagem(): ?object
+    {
+        $validacao = service('validation');
+
+        $regras = [
+            'imagens' => 'uploaded[imagens]|max_size[imagens,1024]|ext_in[imagens,png,jpg,jpeg,webp]',
+        ];
+
+        $mensagens = [
+            'imagens' => [
+                'uploaded' => 'Por favor escolha uma imagem ou mais imagens',
+                'max_size' => 'Por favor selecione uma imagem de no máximo 1MB',
+                'ext_in' => 'Por favor escolha uma imagem png, jpg, jpeg ou webp',
+
+            ]
+        ];
+
+        $validacao->setRules($regras, $mensagens);
+        return $validacao;
+    }
+
+    private function manipulaImagem(string $caminhoImagem, $item_id): void
+    {
+        // Redimensionar imagem
+        service('image')
+            ->withFile($caminhoImagem)
+            ->fit(300, 300, 'center')
+            ->save($caminhoImagem);
+
+        // Adicionar marca d'água de texto
+        $anoAtual = date('Y');
+
+        // Adiciona marca d'água de texto
+        Services::image('imagick')
+            ->withFile($caminhoImagem)
+            ->text("Ordem $anoAtual - Produto-ID $item_id", [
+                'color' => '#fff',
+                'opacity' => 0.5,
+                'withShadow' => false,
+                'hAlign' => 'center',
+                'vAlign' => 'bottom',
+                'fontSize' => 10,
+            ])
+            ->save($caminhoImagem);
+    }
+
+    public function defineQuantidadeImagens($itemId): array
+    {
+        $quantidade['atual'] = $this->itemImagemModel->where('item_id', $itemId)->countAllResults();
+
+        $quantidade['recebida'] = count(array_filter($_FILES['imagens']['name']));
+
+        $quantidade['disponivel'] = 10 - $quantidade['atual'];
+
+        $quantidade['total'] = $quantidade['atual'] + $quantidade['recebida'];
+
+        if ($quantidade['disponivel'] > 0) {
+            $quantidade['mensagem'] = 'Você pode adicionar mais ' . $quantidade['disponivel'] . ' imagens.';
+        }
+
+        return $quantidade;
+    }
+
+    private function removeImagemDoFileSystem($item)
+    {
+        $imagemAntiga = $item->imagem;
+
+        if ($imagemAntiga != null) {
+            $caminhoImagem = WRITEPATH . "uploads/itens/$imagemAntiga";
+
+            if (is_file($caminhoImagem)) {
+                unlink($caminhoImagem);
+            }
+        }
+    }
+
+    public function imagem(string $imagens = null)
+    {
+        if ($imagens != null) {
+            $this->exibeArquivo('itens', $imagens);
+        }
     }
 }
