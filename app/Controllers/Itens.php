@@ -331,6 +331,25 @@ class Itens extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function removeImagem(string $imagem = null)
+    {
+        if ($this->request->getMethod() === 'post') {
+            $objetoImagem = $this->buscaImagemOu404($imagem);
+
+            $this->itemImagemModel->delete($objetoImagem->id);
+
+            $caminhoImagem = WRITEPATH . "uploads/itens/$imagem";
+
+            if (is_file($caminhoImagem)) {
+                unlink($caminhoImagem);
+            }
+
+            return redirect()->back()->with("sucesso", "Imagem removida com sucesso!");
+        }
+
+        return redirect()->back();
+    }
+
     private function buscaItemOu404(int $id = null)
     {
         if (!$id || !$item = $this->itemModel->withDeleted(true)->find($id)) {
@@ -338,6 +357,15 @@ class Itens extends BaseController
         }
 
         return $item;
+    }
+
+    private function buscaImagemOu404(string $imagem = null)
+    {
+        if (!$imagem || !$objetoImagem = $this->itemImagemModel->where('imagem', $imagem)->first()) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos a imagem $imagem");
+        }
+
+        return $objetoImagem;
     }
 
     private function buscaHistoricoItem($item)
@@ -380,7 +408,7 @@ class Itens extends BaseController
         $this->itemHistoricoModel->insert($historico);
     }
 
-    public function validarImagem(): ?object
+    private function validarImagem(): ?object
     {
         $validacao = service('validation');
 
@@ -436,24 +464,17 @@ class Itens extends BaseController
 
         $quantidade['total'] = $quantidade['atual'] + $quantidade['recebida'];
 
-        if ($quantidade['disponivel'] > 0) {
+        if ($quantidade['disponivel'] <= 0) {
+            $quantidade['mensagem'] = 'Você não pode adicionar mais imagens!';
+        }
+        if ($quantidade['disponivel'] == 1) {
+            $quantidade['mensagem'] = 'Você pode adicionar mais 1 imagem.';
+        }
+        if ($quantidade['disponivel'] > 1) {
             $quantidade['mensagem'] = 'Você pode adicionar mais ' . $quantidade['disponivel'] . ' imagens.';
         }
-
+        
         return $quantidade;
-    }
-
-    private function removeImagemDoFileSystem($item)
-    {
-        $imagemAntiga = $item->imagem;
-
-        if ($imagemAntiga != null) {
-            $caminhoImagem = WRITEPATH . "uploads/itens/$imagemAntiga";
-
-            if (is_file($caminhoImagem)) {
-                unlink($caminhoImagem);
-            }
-        }
     }
 
     public function imagem(string $imagens = null)
@@ -462,4 +483,5 @@ class Itens extends BaseController
             $this->exibeArquivo('itens', $imagens);
         }
     }
+
 }
