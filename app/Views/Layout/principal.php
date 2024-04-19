@@ -254,6 +254,8 @@
                 </a></li>
             <li class="<?= url_is('itens*') ? 'active' : '' ?>"><a href="<?= site_url('itens') ?>"> <i
                             class="icon-list-1"></i>Itens </a></li>
+            <li class="<?= url_is('clientes*') ? 'active' : '' ?>"><a href="<?= site_url('clientes') ?>"> <i
+                            class="icon-user"></i>Clientes </a></li>
             <li class="<?= url_is('fornecedores*') ? 'active' : '' ?>"><a href="<?= site_url('fornecedores') ?>"> <i
                             class="icon-contract"></i>Fornecedores </a></li>
             <li class="<?= url_is('usuarios*') ? 'active' : '' ?>"><a href="<?= site_url('usuarios') ?>"> <i
