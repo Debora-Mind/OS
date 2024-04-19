@@ -38,16 +38,16 @@
                 </button>
                 <div class="dropdown-menu">
                     <a href="<?= site_url("fornecedores/editar/$fornecedor->id") ?>" class="dropdown-item">Editar
-                        fornecedore</a>
+                        fornecedor</a>
                     <a href="<?= site_url("fornecedores/notas/$fornecedor->id") ?>" class="dropdown-item">Gegenciar
                         as notas fiscais</a>
                     <div class="dropdown-divider"></div>
                     <?php if ($fornecedor->deleted_at == null): ?>
                         <a href="<?= site_url("fornecedores/excluir/$fornecedor->id") ?>" class="dropdown-item">Excluir
-                            fornecedore</a>
+                            fornecedor</a>
                     <?php else: ?>
                         <a href="<?= site_url("fornecedores/restaurar/$fornecedor->id") ?>" class="dropdown-item">Restaurar
-                            fornecedore</a>
+                            fornecedor</a>
                     <?php endif; ?>
                 </div>
             </div>
