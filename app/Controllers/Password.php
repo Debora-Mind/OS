@@ -52,8 +52,8 @@ class Password extends BaseController
     {
         $email = service('email');
 
-        $email->setFrom('debora.almeida.de.mello@gmail.com', 'Débora Almeida');
-        $email->setTo('debora.almeida.de.mello@gmail.com');
+        $email->setFrom(env('email.SMTPUser'), env('email.user'));
+        $email->setTo($usuario->email);
 
         $email->setSubject('OS | Redefinição da senha de acesso');
 

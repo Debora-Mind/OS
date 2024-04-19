@@ -94,7 +94,7 @@ class Clientes extends BaseController
 
             if ($cliente->hasChanged('email')) {
                 $this->usuarioModel->atualizaEmailCliente($cliente->usuario_id, $cliente->email);
-                //TODO enviar e-mail para o cliente informando da alteração do e-mail de acesso
+                $this->enviaEmailAlteracaoEmailAcesso($cliente);
 
                 session()->setFlashdata('sucesso', 'Dados salvos com sucesso!<br>
                 <br>Importante: informe ao cliente o novo e-mail de acesso ao sistema: 
@@ -156,15 +156,6 @@ class Clientes extends BaseController
         return $this->response->setJSON($retorno);
     }
 
-    private function buscaClienteOu404(int $id = null)
-    {
-        if (!$id || !$cliente = $this->clienteModel->withDeleted(true)->find($id)) {
-            throw PageNotFoundException::forPageNotFound("Não encontramos o cliente $id");
-        }
-
-        return $cliente;
-    }
-
     public function consultaCep()
     {
         if (!$this->request->isAJAX()) {
@@ -176,5 +167,33 @@ class Clientes extends BaseController
         return $this->response->setJSON($this->consultaViaCep($cep));
     }
 
+    private function buscaClienteOu404(int $id = null)
+    {
+        if (!$id || !$cliente = $this->clienteModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o cliente $id");
+        }
+
+        return $cliente;
+    }
+
+    private function enviaEmailAlteracaoEmailAcesso(object $cliente)
+    {
+        $email = service('email');
+
+        $email->setFrom(env('email.SMTPUser'), env('email.user'));
+        $email->setTo($cliente->email);
+
+        $email->setSubject('OS | E-mail de acesso ao sistema foi alterado');
+
+        $data = [
+            'cliente' => $cliente
+        ];
+
+        $mensagem = view('Clientes/email_acesso_alterado', $data);
+
+        $email->setMessage($mensagem);
+
+        $email->send();
+    }
 
 }
