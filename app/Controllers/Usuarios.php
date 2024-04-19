@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Entities\Usuario;
+use App\Models\ClienteModel;
 use App\Models\GrupoModel;
 use App\Models\GrupoUsuarioModel;
 use App\Models\UsuarioModel;
@@ -14,6 +15,7 @@ class Usuarios extends BaseController
     private $usuarioModel;
     private $grupoUsuarioModel;
     private $grupoModel;
+    private $clienteModel;
     private $quantidadeGruposPorPagina = 5;
     private $quantidadeGruposPadroes = 2;
     private $grupoAdministrador = 1;
@@ -24,6 +26,7 @@ class Usuarios extends BaseController
         $this->usuarioModel = new UsuarioModel();
         $this->grupoUsuarioModel = new GrupoUsuarioModel();
         $this->grupoModel = new GrupoModel();
+        $this->clienteModel = new ClienteModel();
     }
 
     public function index()
@@ -191,6 +194,11 @@ class Usuarios extends BaseController
         }
 
         if ($this->usuarioModel->protect(false)->save($usuario)) {
+
+            if ($usuario->hasChanged('email')) {
+                $this->clienteModel->atualizaEmailUsuario($usuario->id, $usuario->email);
+            }
+            
             session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
 
             return $this->response->setJSON($retorno);

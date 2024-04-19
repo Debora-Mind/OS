@@ -117,4 +117,13 @@ class UsuarioModel extends Model
         return $data;
     }
 
+    public function atualizaEmailCliente(int $usuario_id, string $email)
+    {
+        return $this
+            ->protect(false)
+            ->where('id', $usuario_id)
+            ->set('email', $email)
+            ->update();
+    }
+
 }

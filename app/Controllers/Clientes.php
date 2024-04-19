@@ -7,10 +7,13 @@ use App\Models\ClienteModel;
 use App\Models\GrupoUsuarioModel;
 use App\Models\UsuarioModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Traits\ValidacoesTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Clientes extends BaseController
 {
+    use ValidacoesTrait;
+
     private $clienteModel;
     private $usuarioModel;
     private $grupoUsuarioModel;
@@ -35,6 +38,7 @@ class Clientes extends BaseController
         $cliente = $this->buscaClienteOu404($id);
         $cliente->cpf = $cliente->formatarCPF();
         $cliente->telefone = $cliente->formatarTelefone();
+        $cliente->cep = $cliente->formatarCep();
 
         $data = [
             'titulo' => 'Detalhando o cliente' . esc($cliente->nome),
@@ -54,6 +58,60 @@ class Clientes extends BaseController
         ];
 
         return view('Clientes/editar', $data);
+    }
+
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $cliente = $this->buscaClienteOu404($post['id']);
+
+        if (session()->get('blockCep') === true) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['cep' => 'Informe um CEP válido'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $cliente->fill($post);
+
+        $cliente->removeFormatacao();
+
+        if (!$cliente->hasChanged()) {
+            $retorno['info'] = 'Não há dados para atualizar';
+
+            return $this->response->setJSON($retorno);
+        }
+
+
+        if ($this->clienteModel->save($cliente)) {
+
+            if ($cliente->hasChanged('email')) {
+                $this->usuarioModel->atualizaEmailCliente($cliente->usuario_id, $cliente->email);
+                //TODO enviar e-mail para o cliente informando da alteração do e-mail de acesso
+
+                session()->setFlashdata('sucesso', 'Dados salvos com sucesso!<br>
+                <br>Importante: informe ao cliente o novo e-mail de acesso ao sistema: 
+                <p><b>E-mail: </b>' . $cliente->email . '</p>
+                Um e-mail de notificação foi enviado para o cliente.');
+
+                return $this->response->setJSON($retorno);
+            }
+
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->clienteModel->errors();
+
+        return $this->response->setJSON($retorno);
     }
 
     public function recuperaClientes()
@@ -106,5 +164,17 @@ class Clientes extends BaseController
 
         return $cliente;
     }
+
+    public function consultaCep()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $cep = $this->request->getGet('cep');
+
+        return $this->response->setJSON($this->consultaViaCep($cep));
+    }
+
 
 }

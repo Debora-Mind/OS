@@ -16,6 +16,7 @@ class ClienteModel extends Model
         'cpf',
         'telefone',
         'email',
+        'cep',
         'endereco',
         'numero',
         'bairro',
@@ -66,4 +67,13 @@ class ClienteModel extends Model
             'exact_length' => 'O campo CEP deve conter 8 caractéres.',
         ],
     ];
+
+    public function atualizaEmailUsuario(int $usuario_id, string $email)
+    {
+        return $this
+            ->protect(false)
+            ->where('usuario_id', $usuario_id)
+            ->set('email', $email)
+            ->update();
+    }
 }

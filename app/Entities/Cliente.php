@@ -53,11 +53,23 @@ class Cliente extends Entity
         return $telefone_formatado;
     }
 
-    public function removeFormatacao()
+    public function formatarCep()
     {
-        $this->cpf = str_replace(['.', '-'], '', $this->cnpj);
-        $this->telefone = str_replace(['-', '(', ')'], '', $this->telefone);
-        $this->cep = str_replace('-', '', $this->cep);
+        $cep = $this->cep;
+        // Remove qualquer caractere não numérico
+        $cep = preg_replace('/[^0-9]/', '', $cep);
+
+        // Adiciona os pontos e o traço
+        $cep_formatado = substr($cep, 0, 5) . '-';
+        $cep_formatado .= substr($cep, 5, 8);
+
+        return $cep_formatado;
     }
 
+    public function removeFormatacao()
+    {
+        $this->cpf = str_replace(['.', '-'], '', $this->cpf);
+        $this->telefone = str_replace(['-', '(', ')', ' '], '', $this->telefone);
+        $this->cep = str_replace('-', '', $this->cep);
+    }
 }

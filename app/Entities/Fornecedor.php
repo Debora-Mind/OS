@@ -44,7 +44,7 @@ class Fornecedor extends Entity
     public function removeFormatacao()
     {
         $this->cnpj = str_replace(['.', '-', '/'], '', $this->cnpj);
-        $this->telefone = str_replace(['-', '(', ')'], '', $this->telefone);
+        $this->telefone = str_replace(['-', '(', ')', ' '], '', $this->telefone);
         $this->cep = str_replace('-', '', $this->cep);
     }
 
