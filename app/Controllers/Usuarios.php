@@ -198,7 +198,7 @@ class Usuarios extends BaseController
             if ($usuario->hasChanged('email')) {
                 $this->clienteModel->atualizaEmailUsuario($usuario->id, $usuario->email);
             }
-            
+
             session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
 
             return $this->response->setJSON($retorno);
