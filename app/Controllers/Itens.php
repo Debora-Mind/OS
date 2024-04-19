@@ -246,6 +246,13 @@ class Itens extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function imagem(string $imagens = null)
+    {
+        if ($imagens != null) {
+            $this->exibeArquivo('itens', $imagens);
+        }
+    }
+
     public function editarImagem(int $id = null)
     {
         $item = $this->buscaItemOu404($id);
@@ -350,6 +357,55 @@ class Itens extends BaseController
         return redirect()->back();
     }
 
+    public function excluir(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        if ($item->deleted_at != null) {
+            return redirect()->back()->with('info', 'Esse item já encontra-se excluído');
+        }
+
+        if ($this->request->getMethod() === 'post') {
+
+            $item->ativo = false;
+
+            $this->itemModel->protect(false)->save($item);
+
+            if ($this->itemModel->delete($item->id)) {
+                $this->persisteHistoricoItem($item, 'Deletado');
+            }
+
+            if ($item->tipo === 'produto') $this->excluiItemImagens($item);
+
+            return redirect()->to(site_url("itens"))
+                ->with('sucesso', "Item $item->nome excluído com sucesso!");
+        }
+
+        $data = [
+            'titulo' => 'Excluindo o item' . esc($item->nome),
+            'item' => $item
+        ];
+
+        return view('Itens/excluir', $data);
+    }
+
+    public function restaurar(int $id = null)
+    {
+        $item = $this->buscaItemOu404($id);
+
+        if ($item->deleted_at == null) {
+            return redirect()->back()->with('info', 'Apenas itens excluídos podem ser recuperados');
+        }
+
+        $item->deleted_at = null;
+
+        if ($this->itemModel->protect(false)->save($item)) {
+            $this->persisteHistoricoItem($item, 'Restaurado');
+        }
+
+        return redirect()->back()->with('sucesso', "Item " . esc($item->nome) . " recuperado com sucesso!");
+    }
+
     private function buscaItemOu404(int $id = null)
     {
         if (!$id || !$item = $this->itemModel->withDeleted(true)->find($id)) {
@@ -396,7 +452,9 @@ class Itens extends BaseController
 
     private function persisteHistoricoItem($item, string $acao)
     {
-        $item->formataValorParaDB();
+        if ($acao == 'Atualizado') {
+            $item->formataValorParaDB();
+        }
 
         $historico = [
             'usuario_id' => usuario_logado()->id,
@@ -454,7 +512,7 @@ class Itens extends BaseController
             ->save($caminhoImagem);
     }
 
-    public function defineQuantidadeImagens($itemId): array
+    private function defineQuantidadeImagens($itemId): array
     {
         $quantidade['atual'] = $this->itemImagemModel->where('item_id', $itemId)->countAllResults();
 
@@ -473,14 +531,15 @@ class Itens extends BaseController
         if ($quantidade['disponivel'] > 1) {
             $quantidade['mensagem'] = 'Você pode adicionar mais ' . $quantidade['disponivel'] . ' imagens.';
         }
-        
+
         return $quantidade;
     }
 
-    public function imagem(string $imagens = null)
+    private function excluiItemImagens($item): void
     {
-        if ($imagens != null) {
-            $this->exibeArquivo('itens', $imagens);
+        $imagens = $this->itemImagemModel->where('item_id', $item->id)->findAll();
+        foreach ($imagens as $imagem) {
+            $this->removeImagem($imagem->imagem);
         }
     }
 
