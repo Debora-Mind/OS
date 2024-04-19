@@ -19,8 +19,7 @@ class UsuarioFakerSeeder extends Seeder
         $usuariosPush[] = [
             'nome' => 'admin',
             'email' => 'admin@admin.com',
-            //Senha: Admin123
-            'password_hash' => '$2y$10$tGqcJVWZZWt/9UQ1rUbOBuC.zV9blh3wZyvsU6qpfuFgutnoNIeMO',
+            'password_hash' => 'Admin123',
             'ativo' => 1,
         ];
 
@@ -28,8 +27,7 @@ class UsuarioFakerSeeder extends Seeder
             $usuariosPush[] = [
                 'nome' => $faker->unique()->name,
                 'email' => $faker->unique()->email,
-                //Senha: 123456
-                'password_hash' => '$2y$10$IoGLL/k7xUiLr/rT6opP6eHGBD9dXdOTWOhl3NIHU3VQjjWMOBj1u',
+                'password_hash' => '123456',
                 'ativo' => $faker->numberBetween(0, 1),
             ];
         }
