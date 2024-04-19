@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\ClienteModel;
 use App\Models\GrupoUsuarioModel;
 use App\Models\UsuarioModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Clientes extends BaseController
@@ -27,6 +28,20 @@ class Clientes extends BaseController
         ];
 
         return view('Clientes/index', $data);
+    }
+
+    public function exibir(int $id = null)
+    {
+        $cliente = $this->buscaClienteOu404($id);
+        $cliente->cpf = $cliente->formatarCPF();
+        $cliente->telefone = $cliente->formatarTelefone();
+
+        $data = [
+            'titulo' => 'Detalhando o cliente' . esc($cliente->nome),
+            'cliente' => $cliente
+        ];
+
+        return view('Clientes/exibir', $data);
     }
 
     public function recuperaClientes()
@@ -69,6 +84,15 @@ class Clientes extends BaseController
         ];
 
         return $this->response->setJSON($retorno);
+    }
+
+    private function buscaClienteOu404(int $id = null)
+    {
+        if (!$id || !$cliente = $this->clienteModel->withDeleted(true)->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos o cliente $id");
+        }
+
+        return $cliente;
     }
 
 }
