@@ -44,6 +44,18 @@ class Clientes extends BaseController
         return view('Clientes/exibir', $data);
     }
 
+    public function editar(int $id = null)
+    {
+        $cliente = $this->buscaClienteOu404($id);
+
+        $data = [
+            'titulo' => 'Editando o cliente ' . esc($cliente->nome),
+            'cliente' => $cliente
+        ];
+
+        return view('Clientes/editar', $data);
+    }
+
     public function recuperaClientes()
     {
         if (!$this->request->isAJAX()) {
