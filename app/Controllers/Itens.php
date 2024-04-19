@@ -156,6 +156,14 @@ class Itens extends BaseController
 
         $item->historico = $this->buscaHistoricoItem($item);
 
+        if ($item->tipo === 'produto') {
+            $itemImagem = $this->itemImagemModel->select('imagem')->where('item_id', $item->id)->first();
+
+            if ($itemImagem != null) {
+                $item->imagem = $itemImagem->imagem;
+            }
+        }
+
         $data = [
             'titulo' => 'Detalhando o item ' . esc($item->nome),
             'item' => $item
