@@ -117,7 +117,7 @@ class Fornecedores extends BaseController
         $fornecedor->telefone = $fornecedor->formatarTelefone();
 
         $data = [
-            'titulo' => 'Detalhando o fornecedor' . esc($fornecedor->razao),
+            'titulo' => 'Detalhando o fornecedor ' . esc($fornecedor->razao),
             'fornecedor' => $fornecedor
         ];
 
