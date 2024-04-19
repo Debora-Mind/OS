@@ -76,4 +76,5 @@ class ItemModel extends Model
 
         return $codigoInterno;
     }
+
 }

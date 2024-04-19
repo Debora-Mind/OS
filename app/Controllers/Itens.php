@@ -434,20 +434,7 @@ class Itens extends BaseController
 
     private function buscaHistoricoItem($item)
     {
-        $atributos = [
-            'usuario_id',
-            'usuarios.nome as usuario_nome',
-            'acao',
-            'atributos_alterados',
-            'itens_historico.created_at',
-        ];
-
-        $historicoItem = $this->itemHistoricoModel
-            ->select($atributos)
-            ->join('usuarios', 'itens_historico.usuario_id = usuarios.id')
-            ->where('item_id', $item->id)
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
+        $historicoItem = $this->itemHistoricoModel->recuperaHistoricoItem($item->id);
 
         if ($historicoItem != null) {
             foreach ($historicoItem as $key => $hist) {

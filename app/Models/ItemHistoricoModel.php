@@ -22,4 +22,21 @@ class ItemHistoricoModel extends Model
 
         return $data;
     }
+
+    public function recuperaHistoricoItem(int $item_id)
+    {
+        $atributos = [
+            'usuario_id',
+            'usuarios.nome as usuario_nome',
+            'acao',
+            'atributos_alterados',
+            'itens_historico.created_at',
+        ];
+
+        return $this->select($atributos)
+            ->join('usuarios', 'itens_historico.usuario_id = usuarios.id')
+            ->where('item_id', $item_id)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+    }
 }
