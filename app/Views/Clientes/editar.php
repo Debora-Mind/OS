@@ -49,6 +49,7 @@
 <script>
     $(document).ready(function () {
 
+        <?= $this->include('Clientes/_checkmail') ?>
         <?= $this->include('Clientes/_viacep') ?>
 
         $("#form").on('submit', function (e) {

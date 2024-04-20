@@ -1,4 +1,4 @@
-$('[name=cep]').on('keyup', function () {
+$('[name=cep]').on('input', function () {
     var cep = $(this).val();
 
     if (cep.length === 9) {

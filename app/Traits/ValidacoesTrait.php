@@ -52,4 +52,51 @@ trait ValidacoesTrait
 
         return $retorno;
     }
+
+    public function checkEmail(string $email, bool $bypass = false): array
+    {
+        session()->remove('blockEmail');
+        $retorno = [];
+        if ($bypass == true) {
+            return $retorno;
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://mailcheck.p.rapidapi.com/?domain={$email}",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "x-rapidapi-host: mailcheck.p.rapidapi.com",
+                "x-rapidapi-key: " . getenv('CHAVE_CHECK_MAIL_API'),
+            ],
+            CURLOPT_SSL_VERIFYPEER => false,
+        ]);
+
+        $resposta = curl_exec($curl);
+        $erro = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($erro) {
+            $resposta['erro'] = "cURL Error #:" . $erro;
+            return $retorno;
+        }
+
+        $consulta = json_decode($resposta);
+
+        if ($consulta->block == true) {
+            session()->set('blockEmail', esc($consulta->block));
+            $retorno['erro'] = '<span class="text-danger">O e-mail é inválido</span>';
+            return $retorno;
+        }
+
+        return $retorno;
+    }
+
 }

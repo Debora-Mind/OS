@@ -2,13 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
 use App\Models\ClienteModel;
 use App\Models\GrupoUsuarioModel;
 use App\Models\UsuarioModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
 use App\Traits\ValidacoesTrait;
-use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Clientes extends BaseController
 {
@@ -17,6 +15,7 @@ class Clientes extends BaseController
     private $clienteModel;
     private $usuarioModel;
     private $grupoUsuarioModel;
+
     public function __construct()
     {
         $this->clienteModel = new ClienteModel();
@@ -52,6 +51,8 @@ class Clientes extends BaseController
     {
         $cliente = $this->buscaClienteOu404($id);
 
+        $this->removeBlockCepEmailSessao();
+
         $data = [
             'titulo' => 'Editando o cliente ' . esc($cliente->nome),
             'cliente' => $cliente
@@ -71,6 +72,13 @@ class Clientes extends BaseController
         $post = $this->request->getPost();
 
         $cliente = $this->buscaClienteOu404($post['id']);
+
+        if (session()->get('blockEmail') === true) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['email' => 'Informe um e-mail com domínio válido'];
+
+            return $this->response->setJSON($retorno);
+        }
 
         if (session()->get('blockCep') === true) {
             $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
@@ -167,6 +175,17 @@ class Clientes extends BaseController
         return $this->response->setJSON($this->consultaViaCep($cep));
     }
 
+    public function consultaEmail()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $email = $this->request->getGet('email');
+
+        return $this->response->setJSON($this->checkEmail($email));
+    }
+
     private function buscaClienteOu404(int $id = null)
     {
         if (!$id || !$cliente = $this->clienteModel->withDeleted(true)->find($id)) {
@@ -174,6 +193,12 @@ class Clientes extends BaseController
         }
 
         return $cliente;
+    }
+
+    private function removeBlockCepEmailSessao(): void
+    {
+        session()->remove('blockCep');
+        session()->remove('blockEmail');
     }
 
     private function enviaEmailAlteracaoEmailAcesso(object $cliente)
