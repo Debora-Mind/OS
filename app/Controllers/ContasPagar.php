@@ -65,4 +65,17 @@ class ContasPagar extends BaseController
         return view('ContasPagar/exibir', $data);
     }
 
+    public function editar(int $id = null)
+    {
+        $conta = $this->contaPagarModel->buscaContasOu404($id);
+
+        $data = [
+            'titulo' => "Editando a conta do fornecedor $conta->razao",
+            'conta' => $conta,
+        ];
+
+        return view('ContasPagar/editar', $data);
+    }
+
+
 }
