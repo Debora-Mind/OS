@@ -258,6 +258,8 @@
                             class="icon-user"></i>Clientes </a></li>
             <li class="<?= url_is('fornecedores*') ? 'active' : '' ?>"><a href="<?= site_url('fornecedores') ?>"> <i
                             class="icon-contract"></i>Fornecedores </a></li>
+            <li class="<?= url_is('contas*') ? 'active' : '' ?>"><a href="<?= site_url('contas') ?>"> <i
+                            class="icon-bill"></i>Contas a pagar </a></li>
             <li class="<?= url_is('usuarios*') ? 'active' : '' ?>"><a href="<?= site_url('usuarios') ?>"> <i
                             class="icon-user"></i>Usuários </a></li>
             <li class="<?= url_is('grupos*') ? 'active' : '' ?>"><a href="<?= site_url('grupos') ?>"> <i
