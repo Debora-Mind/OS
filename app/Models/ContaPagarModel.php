@@ -46,6 +46,20 @@ class ContaPagarModel extends Model
         ],
     ];
 
+    //Callbacks
+    protected $beforeInsert = [];
+    protected $beforeUpdate = [];
+
+    protected function removeVirgulaValores(array $data)
+    {
+        if (isset($data['data']['valor_conta'])) {
+            $data['data']['valor_conta'] = str_replace('.', '', $data['data']['valor_conta']);
+            $data['data']['valor_conta'] = str_replace(',', '.', $data['data']['valor_conta']);
+        }
+
+        return $data;
+    }
+
     public function recuperaContasPagar()
     {
         $atributos = [

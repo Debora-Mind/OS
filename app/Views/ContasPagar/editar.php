@@ -42,7 +42,6 @@
 
 <?= $this->section('scripts') ?>
 
-<script src="<?= site_url('recursos/vendor/loadingoverlay/loadingoverlay.min.js') ?>"></script>
 <script src="<?= site_url('recursos/vendor/mask/app.js') ?>"></script>
 <script src="<?= site_url('recursos/vendor/mask/jquery.mask.min.js') ?>"></script>
 

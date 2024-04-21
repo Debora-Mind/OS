@@ -77,5 +77,42 @@ class ContasPagar extends BaseController
         return view('ContasPagar/editar', $data);
     }
 
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $conta = $this->contaPagarModel->buscaContasOu404($post['id']);
+
+        $post['valor_conta'] = $this->formataValorParaDB($post['valor_conta']);
+
+        $conta->fill($post);
+
+        if (!$conta->hasChanged()) {
+            $retorno['info'] = 'Não há dados para atualizar';
+
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->contaPagarModel->save($conta)) {
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->contaPagarModel->errors();
+
+        return $this->response->setJSON($retorno);
+    }
+
+    public function formataValorParaDB($valor)
+    {
+        return str_replace(',', '.', str_replace('.', '', $valor));
+    }
 
 }
