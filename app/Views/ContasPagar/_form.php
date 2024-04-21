@@ -1,13 +1,13 @@
 <?php if ($conta->id === null): ?>
 
     <div class="form-group">
-        <label for="" class="form-control-label">Escolha o fornecedor</label>
+        <label for="fornecedor_id" class="form-control-label">Escolha o fornecedor</label>
         <a tabindex="0" role="button" data-toggle="popover"
            data-trigger="focus" style="text-decoration: none"
            data-content="Busque pela razão social ou pelo CNPJ. É preciso digitar pelo menos 3 caracteres para buscar">
             &nbsp;&nbsp;<i class="fa fa-question-circle text-info fa-lg"></i>
         </a>
-        <select name="fornecedor_id[]" class="selectize" id="">
+        <select name="fornecedor_id[]" class="selectize" id="fornecedor_id" required>
             <option value="">Escolha...</option>
         </select>
     </div>

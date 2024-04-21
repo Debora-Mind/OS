@@ -70,7 +70,7 @@
     $(document).ready(function () {
         var $select = $(".selectize").selectize({
             create: false,
-            // sortField: "text",
+            sortField: "text",
             valueField: 'id',
             maxItem: 1,
             labelField: 'razao',

@@ -65,12 +65,13 @@ class ContaPagarModel extends Model
         $atributos = [
             'fornecedores.razao',
             'fornecedores.cnpj',
-            'contas_pagar.*'
+            'contas_pagar.*',
         ];
         
         return $this->select($atributos)
             ->join('fornecedores', 'fornecedores.id = contas_pagar.fornecedor_id')
             ->orderBy('contas_pagar.situacao', 'ASC')
+            ->orderBy('contas_pagar.data_vencimento', 'ASC')
             ->findAll();
     }
 
