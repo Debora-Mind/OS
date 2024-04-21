@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\Cliente;
 use App\Models\ClienteModel;
 use App\Models\GrupoUsuarioModel;
 use App\Models\UsuarioModel;
@@ -45,6 +46,72 @@ class Clientes extends BaseController
         ];
 
         return view('Clientes/exibir', $data);
+    }
+
+    public function criar()
+    {
+        $cliente = new Cliente();
+
+        $data = [
+            'titulo' => 'Criando novo cliente',
+            'cliente' => $cliente
+        ];
+
+        return view('Clientes/criar', $data);
+    }
+
+    public function cadastrar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $this->removeBlockCepEmailSessao();
+
+        $retorno['token'] = csrf_hash();
+
+        if (session()->get('blockEmail') === true) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['email' => 'Informe um e-mail com domínio válido'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        if (session()->get('blockCep') === true) {
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['cep' => 'Informe um CEP válido'];
+
+            return $this->response->setJSON($retorno);
+
+        }
+        $post = $this->request->getPost();
+        $cliente = new Cliente($post);
+
+        $cliente->removeFormatacao();
+
+        if ($this->clienteModel->save($cliente)) {
+
+            $this->enviaEmailCriacaoEmailAcesso($cliente);
+
+            $this->criaUsuarioParaCliente($cliente);
+
+            $btnCriar = anchor("clientes/criar", "Cadastrar novo cliente", ['class' => 'btn btn-danger mt-2']);
+
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!<br>
+                <br><b>Importante: </b>informe ao cliente os dados de acesso ao sistema: 
+                <br><b>Senha inicial: </b>123456
+                <br><b>E-mail: </b>' . $cliente->email . '
+                <br><br>Esses mesmos dados foram enviados para o e-mail do cliente.<br>' . $btnCriar);
+
+            $retorno['id'] = $this->clienteModel->getInsertID();
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->clienteModel->errors();
+
+        return $this->response->setJSON($retorno);
     }
 
     public function editar(int $id = null)
@@ -105,7 +172,7 @@ class Clientes extends BaseController
                 $this->enviaEmailAlteracaoEmailAcesso($cliente);
 
                 session()->setFlashdata('sucesso', 'Dados salvos com sucesso!<br>
-                <br>Importante: informe ao cliente o novo e-mail de acesso ao sistema: 
+                <br><b>Importante: </b>informe ao cliente o novo e-mail de acesso ao sistema: 
                 <p><b>E-mail: </b>' . $cliente->email . '</p>
                 Um e-mail de notificação foi enviado para o cliente.');
 
@@ -183,7 +250,7 @@ class Clientes extends BaseController
 
         $email = $this->request->getGet('email');
 
-        return $this->response->setJSON($this->checkEmail($email));
+        return $this->response->setJSON($this->checkEmail($email, true));
     }
 
     private function buscaClienteOu404(int $id = null)
@@ -219,6 +286,51 @@ class Clientes extends BaseController
         $email->setMessage($mensagem);
 
         $email->send();
+    }
+
+    private function enviaEmailCriacaoEmailAcesso(object $cliente)
+    {
+        $email = service('email');
+
+        $email->setFrom(env('email.SMTPUser'), env('email.user'));
+        $email->setTo($cliente->email);
+
+        $email->setSubject('OS | Dados de acesso ao sistema');
+
+        $data = [
+            'cliente' => $cliente
+        ];
+
+        $mensagem = view('Clientes/email_dados_acesso', $data);
+
+        $email->setMessage($mensagem);
+
+        $email->send();
+    }
+
+    private function criaUsuarioParaCliente(object $cliente)
+    {
+        $usuario = [
+            'nome' => $cliente->nome,
+            'email' => $cliente->email,
+            'password' => '123456',
+            'ativo' => true,
+        ];
+
+        $this->usuarioModel->skipValidation()->protect(false)->insert($usuario);
+
+        $grupoUsuario = [
+            'grupo_id' => 2,
+            'usuario_id' => $this->usuarioModel->getInsertID(),
+        ];
+
+        $this->grupoUsuarioModel->protect(false)->insert($grupoUsuario);
+
+        $this->clienteModel
+            ->protect(false)
+            ->where('id', $this->clienteModel->getInsertID())
+            ->set('usuario_id', $this->usuarioModel->getInsertID())
+            ->update();
     }
 
 }
