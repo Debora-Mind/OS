@@ -39,7 +39,7 @@
                 <div class="dropdown-menu">
                     <a href="<?= site_url("fornecedores/editar/$fornecedor->id") ?>" class="dropdown-item">Editar
                         fornecedor</a>
-                    <a href="<?= site_url("fornecedores/notas/$fornecedor->id") ?>" class="dropdown-item">Gegenciar
+                    <a href="<?= site_url("fornecedores/notas/$fornecedor->id") ?>" class="dropdown-item">Gerenciar
                         as notas fiscais</a>
                     <div class="dropdown-divider"></div>
                     <?php if ($fornecedor->deleted_at == null): ?>
