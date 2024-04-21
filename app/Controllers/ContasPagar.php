@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\ContaPagarModel;
 use App\Models\FornecedorModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class ContasPagar extends BaseController
@@ -50,6 +51,18 @@ class ContasPagar extends BaseController
         ];
 
         return $this->response->setJSON($retorno);
+    }
+
+    public function exibir(int $id = null)
+    {
+        $conta = $this->contaPagarModel->buscaContasOu404($id);
+
+        $data = [
+            'titulo' => "Detalhando a conta do fornecedor $conta->razao",
+            'conta' => $conta,
+        ];
+
+        return view('ContasPagar/exibir', $data);
     }
 
 }
