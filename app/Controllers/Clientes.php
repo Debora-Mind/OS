@@ -189,6 +189,44 @@ class Clientes extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function excluir(int $id = null)
+    {
+        $cliente = $this->buscaClienteOu404($id);
+
+        if ($cliente->deleted_at != null) {
+            return redirect()->back()->with('info', 'Esse cliente já encontra-se excluído');
+        }
+
+        if ($this->request->getMethod() === 'post') {
+            $this->clienteModel->delete($cliente->id);
+
+            return redirect()->to(site_url("clientes"))
+                ->with('sucesso', "Cliente $cliente->nome excluído com sucesso!");
+        }
+
+        $data = [
+            'titulo' => 'Excluindo o cliente' . esc($cliente->nome),
+            'cliente' => $cliente
+        ];
+
+        return view('Clientes/excluir', $data);
+    }
+
+    public function restaurar(int $id = null)
+    {
+        $cliente = $this->buscaClienteOu404($id);
+
+        if ($cliente->deleted_at == null) {
+            return redirect()->back()->with('info', 'Apenas clientes excluídos podem ser recuperados');
+        }
+
+        $cliente->deleted_at = null;
+
+        $this->clienteModel->protect(false)->save($cliente);
+
+        return redirect()->back()->with('sucesso', "Cliente " . esc($cliente->nome) . " recuperado com sucesso!");
+    }
+
     public function recuperaClientes()
     {
         if (!$this->request->isAJAX()) {
