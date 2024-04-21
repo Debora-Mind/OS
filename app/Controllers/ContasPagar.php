@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Entities\ContaPagar;
 use App\Models\ContaPagarModel;
 use App\Models\FornecedorModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -11,12 +12,12 @@ use CodeIgniter\HTTP\ResponseInterface;
 class ContasPagar extends BaseController
 {
     private $contaPagarModel;
-    private $forncedorModel;
+    private $fornecedorModel;
 
     public function __construct()
     {
         $this->contaPagarModel = new ContaPagarModel();
-        $this->forncedorModel = new FornecedorModel();
+        $this->fornecedorModel = new FornecedorModel();
     }
 
     public function index()
@@ -51,6 +52,44 @@ class ContasPagar extends BaseController
         ];
 
         return $this->response->setJSON($retorno);
+    }
+
+    public function criar()
+    {
+        $conta = new ContaPagar();
+
+        $data = [
+            'titulo' => "Criando nova conta",
+            'conta' => $conta,
+        ];
+
+        return view('ContasPagar/criar', $data);
+    }
+
+    public function buscaFornecedores()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $atributos = [
+            'id',
+            'CONCAT(razao, " CNPJ: ", cnpj) AS razao',
+            'cnpj'
+        ];
+
+        $termo = $this->request->getGet('termo');
+
+        $fornecedores = $this->fornecedorModel
+            ->select($atributos)
+            ->asArray()
+            ->like('razao', $termo)
+            ->orLike('cnpj', $termo)
+            ->where('ativo', true)
+            ->orderBy('razao', 'ASC')
+            ->findAll();
+
+        return $this->response->setJSON($fornecedores);
     }
 
     public function exibir(int $id = null)

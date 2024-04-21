@@ -1,12 +1,23 @@
 <?php if ($conta->id === null): ?>
 
+    <div class="form-group">
+        <label for="" class="form-control-label">Escolha o fornecedor</label>
+        <a tabindex="0" role="button" data-toggle="popover"
+           data-trigger="focus" style="text-decoration: none"
+           data-content="Busque pela razão social ou pelo CNPJ. É preciso digitar pelo menos 3 caracteres para buscar">
+            &nbsp;&nbsp;<i class="fa fa-question-circle text-info fa-lg"></i>
+        </a>
+        <select name="fornecedor_id[]" class="selectize" id="">
+            <option value="">Escolha...</option>
+        </select>
+    </div>
 
 <?php else: ?>
 
     <div class="form-group">
         <label class="form-control-label">Fornecedor</label>
         <a tabindex="0" role="button" data-toggle="popover"
-           data-trigger="focus" title="Importante" style="text-decoration: none"
+           data-trigger="focus" style="text-decoration: none"
            data-content="Não é permitido editar o fornecedor da conta">
             &nbsp;&nbsp;<i class="fa fa-question-circle text-info fa-lg"></i>
         </a>

@@ -17,7 +17,10 @@ $routes->group('contas', function($routes)
 {
     $routes->add('/', 'ContasPagar::index');
     $routes->add('recuperacontas', 'ContasPagar::recuperaContas');
+    $routes->add('buscaFornecedores/(:any)', 'ContasPagar::buscaFornecedores/$1');
     $routes->add('exibir/(:segment)', 'ContasPagar::exibir/$1');
     $routes->add('editar/(:segment)', 'ContasPagar::editar/$1');
     $routes->post('atualizar', 'ContasPagar::atualizar');
+    $routes->add('criar', 'ContasPagar::criar');
+    $routes->post('cadastrar', 'ContasPagar::cadastrar');
 });
