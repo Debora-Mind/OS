@@ -73,7 +73,7 @@ class ContaPagarModel extends Model
         ];
 
         $conta = $this->select($atributos)
-            ->join('fornecedores', 'fornecedores.id = contas_pagar.fornecedor.id')
+            ->join('fornecedores', 'fornecedores.id = contas_pagar.fornecedor_id')
             ->find($id);
 
         if ($conta === null) {
