@@ -97,32 +97,6 @@ class ContasPagar extends BaseController
         return $this->response->setJSON($retorno);
     }
 
-    public function buscaFornecedores()
-    {
-        if (!$this->request->isAJAX()) {
-            return redirect()->back();
-        }
-
-        $atributos = [
-            'id',
-            'CONCAT(razao, " CNPJ: ", cnpj) AS razao',
-            'cnpj'
-        ];
-
-        $termo = $this->request->getGet('termo');
-
-        $fornecedores = $this->fornecedorModel
-            ->select($atributos)
-            ->asArray()
-            ->like('razao', $termo)
-            ->orLike('cnpj', $termo)
-            ->where('ativo', true)
-            ->orderBy('razao', 'ASC')
-            ->findAll();
-
-        return $this->response->setJSON($fornecedores);
-    }
-
     public function exibir(int $id = null)
     {
         $conta = $this->contaPagarModel->buscaContasOu404($id);
@@ -180,7 +154,52 @@ class ContasPagar extends BaseController
         return $this->response->setJSON($retorno);
     }
 
-    public function formataValorParaDB($valor)
+    public function excluir(int $id = null)
+    {
+        $conta = $this->contaPagarModel->buscaContasOu404($id);
+
+        if ($this->request->getMethod() === 'post') {
+            $this->contaPagarModel->delete($id);
+
+            return redirect()->to(site_url("contas"))
+                ->with('sucesso', "Conta do fornecedor $conta->razao excluído com sucesso!");
+        }
+
+        $data = [
+            'titulo' => 'Excluindo a conta do fornecedor ' . esc($conta->razao),
+            'conta' => $conta
+        ];
+
+        return view('ContasPagar/excluir', $data);
+    }
+
+    private function buscaFornecedores()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $atributos = [
+            'id',
+            'CONCAT(razao, " CNPJ: ", cnpj) AS razao',
+            'cnpj'
+        ];
+
+        $termo = $this->request->getGet('termo');
+
+        $fornecedores = $this->fornecedorModel
+            ->select($atributos)
+            ->asArray()
+            ->like('razao', $termo)
+            ->orLike('cnpj', $termo)
+            ->where('ativo', true)
+            ->orderBy('razao', 'ASC')
+            ->findAll();
+
+        return $this->response->setJSON($fornecedores);
+    }
+
+    private function formataValorParaDB($valor)
     {
         return str_replace(',', '.', str_replace('.', '', $valor));
     }

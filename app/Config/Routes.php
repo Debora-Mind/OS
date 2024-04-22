@@ -23,4 +23,5 @@ $routes->group('contas', function($routes)
     $routes->post('atualizar', 'ContasPagar::atualizar');
     $routes->add('criar', 'ContasPagar::criar');
     $routes->post('cadastrar', 'ContasPagar::cadastrar');
+    $routes->match(['get', 'post'], 'excluir/(:segment)', 'ContasPagar::excluir/$1');
 });
