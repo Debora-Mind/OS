@@ -107,6 +107,8 @@
                             class="icon-contract"></i>Fornecedores </a></li>
             <li class="<?= url_is('contas*') ? 'active' : '' ?>"><a href="<?= site_url('contas') ?>"> <i
                             class="icon-bill"></i>Contas a pagar </a></li>
+            <li class="<?= url_is('eventos*') ? 'active' : '' ?>"><a href="<?= site_url('eventos') ?>"> <i
+                            class="icon-chart"></i>Eventos </a></li>
             <li class="<?= url_is('usuarios*') ? 'active' : '' ?>"><a href="<?= site_url('usuarios') ?>"> <i
                             class="icon-user"></i>Usuários </a></li>
             <li class="<?= url_is('grupos*') ? 'active' : '' ?>"><a href="<?= site_url('grupos') ?>"> <i
@@ -174,6 +176,13 @@
 <script src="<?= site_url('recursos/') ?>vendor/jquery-validation/jquery.validate.min.js"></script>
 <script src="<?= site_url('recursos/') ?>js/charts-home.js"></script>
 <script src="<?= site_url('recursos/') ?>js/front.js"></script>
+
+<?php if (url_is('eventos*')): ?>
+    <!-- FullCalendar-->
+    <script src="<?= site_url('recursos/vendor/fullcalendar/fullcalendar.min.js') ?>"></script>
+    <script src="<?= site_url('recursos/vendor/fullcalendar/toastr.min.js') ?>"></script>
+    <script src="<?= site_url('recursos/vendor/fullcalendar/moment.min.js') ?>"></script>
+<?php endif; ?>
 
 <!-- Scripts específicos de cada view -->
 <?= $this->renderSection('scripts') ?>
