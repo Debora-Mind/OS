@@ -200,7 +200,7 @@ pre {
 }
 
 .block {
-    padding: 20px;
+    padding: 10px 20px;
     background: #2d3035;
     color: #8a8d93;
     margin-bottom: 30px;
@@ -248,7 +248,7 @@ pre {
 }
 
 .footer .footer__block {
-    min-height: 70px;
+    min-height: 50px;
 }
 
 .dropdown-menu {
@@ -795,10 +795,12 @@ nav#sidebar .avatar {
     height: 60px;
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 15px;
     background: none;
     padding: 4px;
-    border: 3px solid #282b2f;
+}
+
+nav#sidebar .avatar img {
+    border: 2px solid #282b2f;
 }
 
 nav#sidebar ul {
