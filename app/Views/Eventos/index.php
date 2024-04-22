@@ -59,7 +59,32 @@
                         }
                     })
                 }
+            },
+            eventDrop: function (event, denta, revertFunc){
+                if (event.conta_id || event.ordem_id){
+                    alert('Não é possível alterar o evento, pois o mesmo está atrelado a uma conta ou ordem de serviço.')
+                    revertFunc();
+                }
+                else {
+                    var start = $.fullCalendar.formatDate(event.start, 'Y-MM-DD');
+                    var end = $.fullCalendar.formatDate(event.end, 'Y-MM-DD');
+
+                    $.ajax({
+                        url: '<?= site_url('eventos/atualizar/') ?>' + event.id,
+                        type: 'GET',
+                        data: {
+                            start: start,
+                            end: end,
+                        },
+                        success: function (response){
+                            exibeMensagem('Evento atualizado com sucesso!')
+                        },
+                    })
+                }
             }
+
+
+
         })
     })
 

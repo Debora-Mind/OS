@@ -55,4 +55,22 @@ class Eventos extends BaseController
         $retorno['erro'] = $this->eventoModel->errors();
         return $this->response->setJSON($retorno);
     }
+
+    public function atualizar($id = null)
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $dataGet = $this->request->getGet();
+
+        if ($this->eventoModel->update($id, $dataGet)){
+            $retorno['evento'] = $id;
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = $this->eventoModel->errors();
+        return $this->response->setJSON($retorno);
+    }
 }
