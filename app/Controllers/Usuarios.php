@@ -53,20 +53,32 @@ class Usuarios extends BaseController
             'deleted_at'
         ];
 
-        $usuarios = $this->usuarioModel->select($atributos)
+        $usuarios = $this->usuarioModel
+            ->asArray()
+            ->select($atributos)
             ->withDeleted()
             ->orderBy('id', 'DESC')
             ->findAll();
+
+        $gruposUsuarios = $this->grupoUsuarioModel->recuperaGrupos();
+
+        foreach ($usuarios as $key => $usuario) {
+            foreach ($gruposUsuarios as $grupo) {
+                if ($usuario['id'] === $grupo['usuario_id']) {
+                    $usuarios[$key]['grupos'][] = $grupo['nome'];
+                }
+            }
+        }
 
         $data = [];
 
         foreach ($usuarios as $usuario) {
 
-            if ($usuario->imagem != null) {
+            if ($usuario['imagem'] != null) {
                 $imagem = [
-                    'src' => site_url("usuarios/imagem/$usuario->imagem"),
+                    'src' => site_url("usuarios/imagem/" . $usuario['imagem']),
                     'class' => 'rounded-circle img-fluid',
-                    'alt' => esc($usuario->nome),
+                    'alt' => esc($usuario['nome']),
                     'width' => '50'
                 ];
             } else {
@@ -78,12 +90,19 @@ class Usuarios extends BaseController
                 ];
             }
 
+            if (isset($usuario['grupos']) === false){
+                $usuario['grupos'] = ['<span class="text-warning">Sem grupos de acesso</span>'];
+            }
+
+            $usuario = new Usuario($usuario);
+
             $nomeUsuario = esc($usuario->nome);
 
             $data[] = [
                 'imagem' => $usuario->imagem = img($imagem),
-                'nome' => anchor("usuarios/exibir/$usuario->id", $nomeUsuario, "title='Exibir usuário $nomeUsuario'"),
+                'nome' => anchor("usuarios/exibir/" . $usuario->id, $nomeUsuario, "title='Exibir usuário $nomeUsuario'"),
                 'email' => esc($usuario->email),
+                'grupos' => $usuario->grupos,
                 'ativo' => $usuario->exibeSituacao(),
             ];
         }

@@ -21,6 +21,7 @@
                         <th class="text-center" style="width: 12%">Imagem</th>
                         <th>Nome</th>
                         <th>E-mail</th>
+                        <th>Grupos de acesso</th>
                         <th>Situação</th>
                     </tr>
                     </thead>
@@ -79,6 +80,12 @@
                 },
                 {"data": "nome"},
                 {"data": "email"},
+                {
+                    "data": "grupos[, ]",
+                    "render": function (data, type, row){
+                        return data.split(",").join("</br>")
+                    }
+                },
                 {"data": "ativo"},
             ],
             "deferRender": true,
