@@ -60,6 +60,16 @@ class ContaPagarModel extends Model
         return $data;
     }
 
+    protected $beforeDelete = ['excluiEvento'];
+
+    public function excluiEvento($data)
+    {
+        $eventosModel = new EventoModel();
+        $eventosModel->where('conta_id', $data['id'])->delete();
+
+        return $data;
+    }
+
     public function recuperaContasPagar()
     {
         $atributos = [
