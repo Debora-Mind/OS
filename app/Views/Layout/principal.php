@@ -107,6 +107,8 @@
                             class="icon-contract"></i>Fornecedores </a></li>
             <li class="<?= url_is('contas*') ? 'active' : '' ?>"><a href="<?= site_url('contas') ?>"> <i
                             class="icon-bill"></i>Contas a pagar </a></li>
+            <li class="<?= url_is('formaspagamentos*') ? 'active' : '' ?>"><a href="<?= site_url('formaspagamentos') ?>"> <i
+                            class="icon-padnote"></i>Formas de pagamento </a></li>
             <li class="<?= url_is('eventos*') ? 'active' : '' ?>"><a href="<?= site_url('eventos') ?>"> <i
                             class="icon-chart"></i>Eventos </a></li>
             <li class="<?= url_is('usuarios*') ? 'active' : '' ?>"><a href="<?= site_url('usuarios') ?>"> <i
