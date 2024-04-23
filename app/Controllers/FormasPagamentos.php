@@ -8,6 +8,7 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 class FormasPagamentos extends BaseController
 {
     private $formaPagamentoModel;
+    private $quantidadeGruposPadroes = 2;
 
     public function __construct()
     {
@@ -61,6 +62,25 @@ class FormasPagamentos extends BaseController
         return view('FormasPagamentos/exibir', $data);
     }
 
+    public function editar(int $id = null)
+    {
+        $forma = $this->buscaFormaPagamentoOu404($id);
+
+        if ($forma->id < 3) {
+            return redirect()
+                ->to(site_url("formas/exibir/$forma->id"))
+                ->with("info",
+                "A forma de pagamento <b class='text-white'>$forma->nome</b> não pode ser editara ou excluída.");
+        }
+
+        $data = [
+            'titulo' => "Editando a forma de pagamento $forma->nome",
+            'forma' => $forma,
+        ];
+
+        return view('FormasPagamentos/editar', $data);
+    }
+
     private function buscaFormaPagamentoOu404(int $id = null)
     {
         if (!$id || !$forma = $this->formaPagamentoModel->find($id)) {
@@ -68,6 +88,46 @@ class FormasPagamentos extends BaseController
         }
 
         return $forma;
+    }
+
+    public function atualizar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $forma = $this->buscaFormaPagamentoOu404($post['id']);
+
+        if ($forma->id <= $this->quantidadeGruposPadroes) {
+
+            $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+            $retorno['erros_model'] = ['forma' => 'A forma de pagamento <b class="text-white">' . esc($forma->nome) .
+                '</b> não pode ser editada ou excluída.'];
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $forma->fill($post);
+
+        if (!$forma->hasChanged()) {
+            $retorno['info'] = 'Não há dados para serem atualizados';
+            return $this->response->setJSON($retorno);
+        }
+
+        if ($this->formaPagamentoModel->save($forma)) {
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->formaPagamentoModel->errors();
+
+        return $this->response->setJSON($retorno);
     }
 
 
