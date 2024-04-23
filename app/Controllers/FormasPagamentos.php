@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\FormaPagamentoModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class FormasPagamentos extends BaseController
 {
@@ -47,4 +48,27 @@ class FormasPagamentos extends BaseController
 
         return $this->response->setJSON($retorno);
     }
+
+    public function exibir(int $id = null)
+    {
+        $forma = $this->buscaFormaPagamentoOu404($id);
+
+        $data = [
+            'titulo' => "Detalhando a forma de pagamento $forma->nome",
+            'forma' => $forma,
+        ];
+
+        return view('FormasPagamentos/exibir', $data);
+    }
+
+    private function buscaFormaPagamentoOu404(int $id = null)
+    {
+        if (!$id || !$forma = $this->formaPagamentoModel->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos a forma de pagamento $id");
+        }
+
+        return $forma;
+    }
+
+
 }
