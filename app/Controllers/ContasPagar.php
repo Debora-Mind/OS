@@ -148,6 +148,13 @@ class ContasPagar extends BaseController
         }
 
         if ($this->contaPagarModel->save($conta)) {
+
+            // TODO A FUNÇÃO ALTERA APENAS A DATA, SE O VALOR FOR ALTERADO A MENSAGEM DO EVENTO VAI FICAR INCORRETA
+            if ($conta->hasChanged('data_vencimento') && $conta->situacao == 0){
+                $dias = $conta->defineDataVencimentoEvento();
+                $this->eventoModel->atualizaEvento('conta_id', $conta->id, $dias);
+            }
+
             session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
             return $this->response->setJSON($retorno);
         }

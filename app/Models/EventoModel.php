@@ -36,8 +36,8 @@ class EventoModel extends Model
         $evento = [
             "$coluna" => $id,
             'title' => $titulo,
-            'start' => date("Y-m-d", strtotime("+$dias days")),
-            'end' => date("Y-m-d", strtotime("+$dias days")),
+            'start' => date("Y-m-d", strtotime("+$dias days", time())),
+            'end' => date("Y-m-d", strtotime("+$dias days", time())),
         ];
 
         return $this->insert($evento);
@@ -48,8 +48,8 @@ class EventoModel extends Model
         return $this
             ->protect(false)
             ->where($coluna, $id)
-            ->set('start', date("Y-m-d", strtotime("+$dias", time())))
-            ->set('end', date("Y-m-d", strtotime("+$dias", time())))
+            ->set('start', date("Y-m-d", strtotime("+$dias days", time())))
+            ->set('end', date("Y-m-d", strtotime("+$dias days", time())))
             ->update();
     }
 }
