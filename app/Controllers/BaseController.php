@@ -82,6 +82,6 @@ abstract class BaseController extends Controller
     {
         echo '<pre>';
         print_r($objeto);
-        exit('Fim');
+        exit('<br>Fim');
     }
 }

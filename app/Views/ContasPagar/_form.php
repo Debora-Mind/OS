@@ -7,7 +7,7 @@
            data-content="Busque pela razão social ou pelo CNPJ. É preciso digitar pelo menos 3 caracteres para buscar">
             &nbsp;&nbsp;<i class="fa fa-question-circle text-info fa-lg"></i>
         </a>
-        <select name="fornecedor_id[]" class="selectize" id="fornecedor_id" required>
+        <select name="fornecedor_id" class="selectize" id="fornecedor_id" required>
             <option value="">Escolha...</option>
         </select>
     </div>

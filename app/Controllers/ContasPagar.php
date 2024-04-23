@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Entities\ContaPagar;
 use App\Models\ContaPagarModel;
+use App\Models\EventoModel;
 use App\Models\FornecedorModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -13,11 +14,13 @@ class ContasPagar extends BaseController
 {
     private $contaPagarModel;
     private $fornecedorModel;
+    private $eventoModel;
 
     public function __construct()
     {
         $this->contaPagarModel = new ContaPagarModel();
         $this->fornecedorModel = new FornecedorModel();
+        $this->eventoModel = new EventoModel();
     }
 
     public function index()
@@ -76,15 +79,16 @@ class ContasPagar extends BaseController
 
         $post = $this->request->getPost();
 
-        $conta = new ContaPagar();
-
         $post['valor_conta'] = $this->formataValorParaDB($post['valor_conta']);
 
-        $conta->fill($post);
-
-//        $this->debugAjax($conta);
+        $conta = new ContaPagar($post);
 
         if ($this->contaPagarModel->save($conta)) {
+
+            if ($conta->situacao == 0){
+                $this->cadastraEventoDaConta($conta);
+            }
+
             session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
             $retorno['id'] = $this->contaPagarModel->getInsertID();
 
@@ -173,7 +177,7 @@ class ContasPagar extends BaseController
         return view('ContasPagar/excluir', $data);
     }
 
-    private function buscaFornecedores()
+    public function buscaFornecedores()
     {
         if (!$this->request->isAJAX()) {
             return redirect()->back();
@@ -204,4 +208,17 @@ class ContasPagar extends BaseController
         return str_replace(',', '.', str_replace('.', '', $valor));
     }
 
+    private function cadastraEventoDaConta(object $conta): void
+    {
+        $fornecedor = $this->fornecedorModel->select('razao, cnpj')->find($conta->fornecedor_id);
+
+        $razao = esc($fornecedor->razao);
+        $cnpj = esc($fornecedor->cnpj);
+        $valorConta = "R$ " . esc(number_format($conta->valor_conta, 2, ',', '.'));
+        $tituloEvento = "Conta do Fornecedor $razao - CNPJ: $cnpj | Valor $valorConta";
+        $dias = $conta->defineDataVencimentoEvento();
+        $contaId = $this->contaPagarModel->getInsertID();
+
+        $this->eventoModel->cadastraEvento('conta_id', $tituloEvento, $contaId, $dias);
+    }
 }

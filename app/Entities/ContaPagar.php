@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use PhpParser\Node\Stmt\Return_;
 
 class ContaPagar extends Entity
 {
@@ -36,5 +37,12 @@ class ContaPagar extends Entity
 
         return '<i class="fa fa-exclamation-circle text-danger">
                     </i>&nbsp;Não encontramos os dados da sua conta';
+    }
+
+    public function defineDataVencimentoEvento(): int
+    {
+        $dataAtualConvertida = $this->mutateDate(date('Y-m-d'));
+
+        return $dataAtualConvertida->difference($this->data_vencimento)->getDays();
     }
 }

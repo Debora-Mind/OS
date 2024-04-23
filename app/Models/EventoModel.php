@@ -36,8 +36,8 @@ class EventoModel extends Model
         $evento = [
             "$coluna" => $id,
             'title' => $titulo,
-            'start' => date("Y-m-d", strtotime("+$dias", time())),
-            'end' => date("Y-m-d", strtotime("+$dias", time())),
+            'start' => date("Y-m-d", strtotime("+$dias days")),
+            'end' => date("Y-m-d", strtotime("+$dias days")),
         ];
 
         return $this->insert($evento);
