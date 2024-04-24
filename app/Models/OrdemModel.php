@@ -76,4 +76,25 @@ class OrdemModel extends Model
         return strtoupper($codigoOrdem);
     }
 
+    public function recuperOrdens()
+    {
+        $atributos = [
+            'ordens.codigo',
+            'ordens.created_at',
+            'ordens.situacao',
+            'clientes.nome',
+            'clientes.cpf',
+        ];
+
+        return $this
+            ->select('clientes', 'clientes.id = ordens.cliente_id')
+            ->join('clientes', 'clientes.id = ordens.cliente_id')
+            ->orderBy('ordens.situacao', 'ASC')
+            ->orderBy('ordens.created_at', 'DESC')
+            ->withDeleted()
+            ->findAll();
+    }
+
+
+
 }
