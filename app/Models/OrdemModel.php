@@ -87,7 +87,7 @@ class OrdemModel extends Model
         ];
 
         return $this
-            ->select('clientes', 'clientes.id = ordens.cliente_id')
+            ->select($atributos)
             ->join('clientes', 'clientes.id = ordens.cliente_id')
             ->orderBy('ordens.situacao', 'ASC')
             ->orderBy('ordens.created_at', 'DESC')
@@ -95,6 +95,18 @@ class OrdemModel extends Model
             ->findAll();
     }
 
+    public function formatarCPF($cpf)
+    {
+        // Remove qualquer caractere não numérico
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
 
+        // Adiciona os pontos e o traço
+        $cpf_formatado = substr($cpf, 0, 3) . '.';
+        $cpf_formatado .= substr($cpf, 3, 3) . '.';
+        $cpf_formatado .= substr($cpf, 6, 3) . '-';
+        $cpf_formatado .= substr($cpf, 9, 2);
+
+        return $cpf_formatado;
+    }
 
 }
