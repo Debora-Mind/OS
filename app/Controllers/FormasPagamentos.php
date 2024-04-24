@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\FormaPagamento;
 use App\Models\FormaPagamentoModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
@@ -81,15 +82,6 @@ class FormasPagamentos extends BaseController
         return view('FormasPagamentos/editar', $data);
     }
 
-    private function buscaFormaPagamentoOu404(int $id = null)
-    {
-        if (!$id || !$forma = $this->formaPagamentoModel->find($id)) {
-            throw PageNotFoundException::forPageNotFound("Não encontramos a forma de pagamento $id");
-        }
-
-        return $forma;
-    }
-
     public function atualizar()
     {
         if (!$this->request->isAJAX()) {
@@ -130,5 +122,54 @@ class FormasPagamentos extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function criar()
+    {
+        $forma = new FormaPagamento();
+
+        $data = [
+            'titulo' => "Criando nova forma de pagamento",
+            'forma' => $forma,
+        ];
+
+        return view('FormasPagamentos/criar', $data);
+    }
+
+    public function cadastrar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $forma = new FormaPagamento($post);
+
+        if ($this->formaPagamentoModel->insert($forma)) {
+
+            $btnCriar = anchor("formaspagamentos/criar", "Cadastrar nova forma de pagamento", ['class' => 'btn btn-danger mt-2']);
+
+            session()->setFlashdata('sucesso', "Dados salvos com sucesso! <br> $btnCriar");
+
+            $retorno['id'] = $this->formaPagamentoModel->getInsertID();
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->formaPagamentoModel->errors();
+
+        return $this->response->setJSON($retorno);
+    }
+
+    private function buscaFormaPagamentoOu404(int $id = null)
+    {
+        if (!$id || !$forma = $this->formaPagamentoModel->find($id)) {
+            throw PageNotFoundException::forPageNotFound("Não encontramos a forma de pagamento $id");
+        }
+
+        return $forma;
+    }
 
 }

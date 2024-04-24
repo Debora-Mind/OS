@@ -12,7 +12,7 @@
     <div class="col-lg-12">
         <div class="block">
 
-            <a href="<?= site_url('formas/criar') ?>" class="btn btn-danger mb-4">Criar nova forma de pagamento</a>
+            <a href="<?= site_url('formaspagamentos/criar') ?>" class="btn btn-danger mb-4">Criar nova forma de pagamento</a>
 
             <div class="table-responsive">
                 <table id="ajaxTable" class="table table-striped table-sm" style="width: 100%">
