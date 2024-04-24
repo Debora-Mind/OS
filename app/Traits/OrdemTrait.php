@@ -13,12 +13,12 @@ trait OrdemTrait
         if ($ordem->situacao === 'aberta'){
             $ordemItens = $ordemItemModel->recuperaItensDaOrdem($ordem->id);
 
-            $ordem->itens = ($ordemItens !== null ? $ordemItens : null);
+            $ordem->itens = (!empty($ordemItens) ? $ordemItens : null);
 
             return $ordem;
         }
 
-        if ($ordem->itens !== null) {
+        if ($ordem->itens != null) {
             $ordem->itens = unserialize($ordem->itens);
         }
 
