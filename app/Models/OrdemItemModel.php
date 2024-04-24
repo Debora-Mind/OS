@@ -19,17 +19,17 @@ class OrdemItemModel extends Model
     public function recuperaItensDaOrdem(int $ordemId)
     {
         $atributos = [
-            'item.id',
-            'item.nome',
-            'item.preco_venda',
-            'item.tipo',
-            'item.estoque',
+            'itens.id',
+            'itens.nome',
+            'itens.preco_venda',
+            'itens.tipo',
+            'itens.estoque',
             'ordens_itens.id AS id_principal',
             'ordens_itens.item_quantidade',
         ];
 
         return$this->select($atributos)
-            ->join('itens', 'itens.id = ordem_itens.item_id')
+            ->join('itens', 'itens.id = ordens_itens.item_id')
             ->where('ordens_itens.ordem_id', $ordemId)
             ->groupBy('itens.nome')
             ->orderBy('itens.tipo', 'ASC')
