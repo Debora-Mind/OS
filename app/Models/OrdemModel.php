@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\Model;
 
 class OrdemModel extends Model
@@ -109,4 +110,43 @@ class OrdemModel extends Model
         return $cpf_formatado;
     }
 
+    public function buscaOrdemOu404(string $codigo)
+    {
+        if ($codigo === null) {
+            return PageNotFoundException::forPageNotFound("Não encontramos a ordem $codigo");
+        }
+
+        $atributos = [
+            'ordens.*',
+            'u_aber.id AS usuario_abertura_id',
+            'u_aber.nome AS usuario_abertura',
+            'u_resp.id AS usuario_responsavel_id',
+            'u_resp.nome AS usuario_responsavel',
+            'u_ence.id AS usuario_encerrameto_id',
+            'u_ence.nome AS usuario_encerrameto_id',
+            'clientes.usuario_id AS cliente_usuario_id',
+            'clientes.nome',
+            'clientes.cpf',
+            'clientes.telefone',
+            'clientes.email',
+        ];
+
+        $ordem = $this
+            ->select($atributos)
+            ->join('ordens_responsaveis', 'ordens_responsaveis.ordem_id = ordens.id')
+            ->join('clientes', 'clientes.id = ordens.cliente_id')
+            ->join('usuarios AS u_cliente', 'u_cliente.id = clientes.usuario_id')
+            ->join('usuarios AS u_aber', 'u_aber.id = ordens_responsaveis.usuario_abertura_id')
+            ->join('usuarios AS u_resp', 'u_resp.id = ordens_responsaveis.usuario_responsavel_id', 'LEFT')
+            ->join('usuarios AS u_ence', 'u_ence.id = ordens_responsaveis.usuario_encerramento_id', 'LEFT')
+            ->where('ordens.codigo', $codigo)
+            ->withDeleted()
+            ->first();
+
+        if ($ordem === null) {
+            return PageNotFoundException::forPageNotFound("Não encontramos a ordem $codigo");
+        }
+
+        return $ordem;
+    }
 }
