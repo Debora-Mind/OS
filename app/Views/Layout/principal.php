@@ -99,6 +99,8 @@
 
             <li class="<?= url_is('/') ? 'active' : '' ?>"><a href="<?= site_url('/') ?>"> <i class="icon-home"></i>Home
                 </a></li>
+            <li class="<?= url_is('ordens*') ? 'active' : '' ?>"><a href="<?= site_url('ordens') ?>"> <i
+                            class="icon-list"></i>Ordens de serviço </a></li>
             <li class="<?= url_is('itens*') ? 'active' : '' ?>"><a href="<?= site_url('itens') ?>"> <i
                             class="icon-list-1"></i>Itens </a></li>
             <li class="<?= url_is('clientes*') ? 'active' : '' ?>"><a href="<?= site_url('clientes') ?>"> <i
