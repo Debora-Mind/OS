@@ -73,7 +73,7 @@ class OrdemModel extends Model
 
         } while ($this->countAllResults() > 1);
 
-        return $codigoOrdem;
+        return strtoupper($codigoOrdem);
     }
 
 }
