@@ -26,10 +26,10 @@ class Ordem extends Entity
                 return '<span class="text-warning"><i class="fa fa-unlock"></i>&nbsp;' . ucfirst($this->situacao) . '</span>';
             }
             elseif ($this->situacao == 'encerrada') {
-                return '<span class="text-white"><i class="fa fa-lock"></i>&nbsp;' . ucfirst($this->situacao) . '</span>';
+                return '<span class="text-success"><i class="fa fa-lock"></i>&nbsp;' . ucfirst($this->situacao) . '</span>';
             }
             elseif ($this->situacao == 'aguardando') {
-                return '<span class="text-warning"><i class="fa fa-clock-o"></i>&nbsp;' . ucfirst($this->situacao) . '</span>';
+                return '<span class="text-info"><i class="fa fa-clock-o"></i>&nbsp;' . ucfirst($this->situacao) . '</span>';
             }
             elseif ($this->situacao == 'cancelada') {
                 return '<span class="text-danger"><i class="fa fa-ban"></i>&nbsp;' . ucfirst($this->situacao) . '</span>';
