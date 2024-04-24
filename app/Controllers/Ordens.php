@@ -41,7 +41,7 @@ class Ordens extends BaseController
             $data[] = [
                 'codigo' => anchor("ordens/exibir/$ordemCodigo", $ordemCodigo, "title='Exibir ordem $ordemCodigo'"),
                 'cliente' => esc($ordem->nome),
-                'cpf' => esc($ordem->cpf),
+                'cpf' => $this->ordemModel->formatarCPF(esc($ordem->cpf)),
                 'created_at' => esc($ordem->created_at->humanize()),
                 'situacao' => $ordem->exibeSituacao(),
             ];
