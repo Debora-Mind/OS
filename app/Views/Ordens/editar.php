@@ -3,26 +3,7 @@
 <?= $this->section('titulo') ?> <?= $titulo ?> <?= $this->endSection() ?>
 
 <?= $this->section('estilos') ?>
-<style>
-    /* Estilizando o select para acompanhar a formatação do template */
 
-    .selectize-input,
-    .selectize-control.single .selectize-input.input-active {
-        background: #2d3035 !important;
-    }
-
-    .selectize-dropdown,
-    .selectize-input,
-    .selectize-input input {
-        color: #777;
-    }
-
-    .selectize-input {
-        /*        height: calc(2.4rem + 2px);*/
-        border: 1px solid #444951;
-        border-radius: 0;
-    }
-</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('conteudo') ?>
@@ -64,35 +45,6 @@
 <script type="text/javascript" src="<?= site_url('recursos/vendor/selectize/selectize.min.js') ?>"></script>
 
 <script>
-    $(document).ready(function () {
-        var $select = $(".selectize").selectize({
-            create: false,
-            sortField: "text",
-            valueField: 'id',
-            maxItem: 1,
-            labelField: 'cliente',
-            searchField: ['nome', 'cpf'],
-            load: function (query, callback) {
-                if (query.length < 3) {
-                    return callback()
-                }
-
-                $.ajax({
-                    url: '<?= site_url('ordens/buscaClientes/') ?>',
-                    data: {
-                        termo: encodeURIComponent(query)
-                    },
-                    success: function (response){
-                        $select.options = response
-
-                        callback(response)
-                    },
-                    error: function () {
-                        alert('Não foi possível processar a solicitação. Por favor entre em contato com o suporte técnico.')
-                    }
-                })
-            }
-        })})
 
     $(document).ready(function () {
 
