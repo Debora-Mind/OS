@@ -73,6 +73,7 @@ class Eventos extends BaseController
         $retorno['erro'] = $this->eventoModel->errors();
         return $this->response->setJSON($retorno);
     }
+
     public function excluir()
     {
         if (!$this->request->isAJAX()) {

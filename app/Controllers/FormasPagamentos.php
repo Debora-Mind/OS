@@ -9,7 +9,7 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 class FormasPagamentos extends BaseController
 {
     private $formaPagamentoModel;
-    private $quantidadeGruposPadroes = 2;
+    private $quantidadeFormasPagamentoPadrao = 2;
 
     public function __construct()
     {
@@ -67,11 +67,11 @@ class FormasPagamentos extends BaseController
     {
         $forma = $this->buscaFormaPagamentoOu404($id);
 
-        if ($forma->id < 3) {
+        if ($forma->id <= $this->quantidadeFormasPagamentoPadrao) {
             return redirect()
-                ->to(site_url("formas/exibir/$forma->id"))
+                ->to(site_url("formaspagamentos/exibir/$forma->id"))
                 ->with("info",
-                "A forma de pagamento <b class='text-white'>$forma->nome</b> não pode ser editara ou excluída.");
+                "A forma de pagamento <b>$forma->nome</b> não pode ser editara ou excluída.");
         }
 
         $data = [
@@ -94,7 +94,7 @@ class FormasPagamentos extends BaseController
 
         $forma = $this->buscaFormaPagamentoOu404($post['id']);
 
-        if ($forma->id <= $this->quantidadeGruposPadroes) {
+        if ($forma->id <= $this->quantidadeFormasPagamentoPadrao) {
 
             $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
             $retorno['erros_model'] = ['forma' => 'A forma de pagamento <b class="text-white">' . esc($forma->nome) .
@@ -162,6 +162,34 @@ class FormasPagamentos extends BaseController
 
         return $this->response->setJSON($retorno);
     }
+
+    public function excluir(int $id = null)
+    {
+        $forma = $this->buscaFormaPagamentoOu404($id);
+
+        if ($forma->id <= $this->quantidadeFormasPagamentoPadrao) {
+
+            return redirect()->to(site_url("formaspagamentos/exibir/$forma->id"))
+                ->with('atencao', "A forma de pagamento <b>" . esc($forma->nome) .
+                "</b> não pode ser editada ou excluída.");
+        }
+
+        if ($this->request->getMethod() === 'post') {
+
+            $this->formaPagamentoModel->delete($forma->id);
+
+            return redirect()->to(site_url("formaspagamentos"))
+                ->with('sucesso', "Forma de pagamento <b>$forma->nome</b> excluída com sucesso!");
+        }
+
+        $data = [
+            'titulo' => 'Excluindo a forma de pagamento ' . esc($forma->nome),
+            'forma' => $forma
+        ];
+
+        return view('FormasPagamentos/excluir', $data);
+    }
+
 
     private function buscaFormaPagamentoOu404(int $id = null)
     {
