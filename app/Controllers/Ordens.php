@@ -220,6 +220,21 @@ class Ordens extends BaseController
         return view('Ordens/excluir', $data);
     }
 
+    public function restaurar(string $codigo = null)
+    {
+        $ordem = $this->ordemModel->buscaOrdemOu404($codigo);
+
+        if ($ordem->deleted_at == null) {
+            return redirect()->back()->with('info', 'Apenas ordens excluídas podem ser recuperadas');
+        }
+
+        $ordem->deleted_at = null;
+
+        $this->ordemModel->protect(false)->save($ordem);
+
+        return redirect()->back()->with('sucesso', "Ordem <b>" . esc($ordem->codigo) . "</b> recuperada com sucesso!");
+    }
+
     public function buscaClientes()
     {
         if (!$this->request->isAJAX()) {
