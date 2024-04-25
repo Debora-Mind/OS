@@ -119,7 +119,7 @@
                     $('[name=csrf_ordem]').val(response.token);
 
                     if (!response.erro) {
-                        window.location.href = "<?= site_url("ordens/detalhes/$ordem->codigo"); ?>"
+                        window.location.href = "<?= site_url("ordens/detalhes/"); ?>" + response.codigo
                     } else {
                         $('#response').html('<div class="alert alert-danger">' + response.erro + '</div>');
 

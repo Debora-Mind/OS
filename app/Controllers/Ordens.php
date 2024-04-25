@@ -3,8 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Entities\Ordem;
 use App\Models\ClienteModel;
 use App\Models\OrdemModel;
+use App\Models\OrdemResponsavelModel;
 use App\Models\TransacaoModel;
 use App\Traits\OrdemTrait;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -15,12 +17,14 @@ class Ordens extends BaseController
     private $ordemModel;
     private $transacaoModel;
     private $clienteModel;
+    private $ordemReponsavelModel;
 
     public function __construct()
     {
         $this->ordemModel = new OrdemModel();
         $this->transacaoModel = new TransacaoModel();
         $this->clienteModel = new ClienteModel();
+        $this->ordemReponsavelModel = new OrdemResponsavelModel();
     }
 
     public function index()
@@ -58,6 +62,49 @@ class Ordens extends BaseController
         $retorno = [
             'data' => $data
         ];
+
+        return $this->response->setJSON($retorno);
+    }
+
+    public function criar()
+    {
+        $ordem = new Ordem();
+
+        $ordem->codigo = $this->ordemModel->geraCodigoOrdem();
+
+        $data = [
+            'titulo' => 'Cadastrando nova ordem de serviço',
+            'ordem' => $ordem,
+        ];
+
+        return view('Ordens/criar', $data);
+    }
+
+    public function cadastrar()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $retorno['token'] = csrf_hash();
+
+        $post = $this->request->getPost();
+
+        $ordem = new Ordem($post);
+
+        if ($this->ordemModel->save($ordem)) {
+
+            $this->finalizaCadastroDaOrdem($ordem);
+
+            session()->setFlashdata('sucesso', 'Dados salvos com sucesso!');
+
+            $retorno['codigo'] = $ordem->codigo;
+
+            return $this->response->setJSON($retorno);
+        }
+
+        $retorno['erro'] = 'Por favor verifique os erros abaixo e tente novamente';
+        $retorno['erros_model'] = $this->ordemModel->errors();
 
         return $this->response->setJSON($retorno);
     }
@@ -150,7 +197,7 @@ class Ordens extends BaseController
 
         $atributos = [
             'id',
-            'CONCAT(nome, " CPF: ", cpf) AS cliente',
+            'CONCAT(nome, " CPF: ", cpf) AS nome',
             'cpf'
         ];
 
@@ -165,6 +212,19 @@ class Ordens extends BaseController
             ->findAll();
 
         return $this->response->setJSON($clientes);
+    }
+
+    private function finalizaCadastroDaOrdem(object $ordem): void
+    {
+        $ordemAberta = [
+            'ordem_id' => $this->ordemModel->getInsertID(),
+            'usuario_abertura_id' => usuario_logado()->id
+        ];
+
+        $this->ordemReponsavelModel->insert($ordemAberta);
+        $ordem->cliente = $this->clienteModel->select('nome', 'email')->find($ordem->cliente_id);
+
+        // TODO ENVIAR E-MAIL PARA CLIENTE COM A ORDEM RECÉM CRIADA
     }
 
 }

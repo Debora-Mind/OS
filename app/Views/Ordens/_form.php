@@ -19,13 +19,13 @@
     <?php if ($ordem->id === null): ?>
 
         <div class="form-group">
-            <label for="nome" class="form-control-label">Escolha o cliente</label>
+            <label for="cliente_id" class="form-control-label">Escolha o cliente</label>
             <a tabindex="0" role="button" data-toggle="popover"
                data-trigger="focus" style="text-decoration: none"
                data-content="Busque pelo nome ou CPF do cliente. É preciso digitar pelo menos 3 caracteres para buscar">
                 &nbsp;&nbsp;<i class="fa fa-question-circle text-info fa-lg"></i>
             </a>
-            <select name="nome" class="selectize" id="nome" required>
+            <select name="cliente_id" class="selectize" id="nome" required>
                 <option value="">Escolha...</option>
             </select>
         </div>
