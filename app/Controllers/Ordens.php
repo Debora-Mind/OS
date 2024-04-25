@@ -189,6 +189,37 @@ class Ordens extends BaseController
         return $this->response->setJSON($retorno);
     }
 
+    public function excluir(string $codigo = null)
+    {
+        $ordem = $this->ordemModel->buscaOrdemOu404($codigo);
+
+        if ($ordem->deleted_at != null) {
+            return redirect()->back()->with('info', "A ordem $ordem->codigo já encontra-se excluída");
+        }
+
+        $situacoesPermitidas = [
+            'encerrada',
+            'cancelada',
+        ];
+
+        if (!in_array($ordem->situacao, $situacoesPermitidas)) {
+            return redirect()->back()->with('info', "A ordem encerradas ou canceladas podem ser excluídas");
+        }
+
+        if ($this->request->getMethod() === 'post') {
+            $this->ordemModel->delete($ordem->id);
+            return redirect()->to(site_url('ordens'))->with('sucesso', "Ordem <b>$ordem->codigo</b> excluída com sucesso!");
+        }
+
+
+        $data = [
+            'titulo' => "Excluindo a ordem de serviço $ordem->codigo",
+            'ordem' => $ordem,
+        ];
+
+        return view('Ordens/excluir', $data);
+    }
+
     public function buscaClientes()
     {
         if (!$this->request->isAJAX()) {
