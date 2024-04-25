@@ -12,6 +12,8 @@ $routes->get('login', 'Login::novo');
 $routes->get('logout', 'Login::logout');
 $routes->get('esqueci', 'Password::esqueci');
 
+//TODO CRIAR ROTA PARA ordens/minhas que é enviado no e-mail para o cliente
+
 
 $routes->group('contas', function($routes)
 {

@@ -214,6 +214,26 @@ class Ordens extends BaseController
         return $this->response->setJSON($clientes);
     }
 
+    private function enviaOrdemEmAndamentoParaCliente(object $ordem): void
+    {
+        $email = service('email');
+
+        $email->setFrom(env('email.SMTPUser'), env('email.user'));
+        $email->setTo($ordem->cliente->email);
+
+        $email->setSubject("OS | Ordem de serviço $ordem->codigo em andamento");
+
+        $data = [
+            'ordem' => $ordem
+        ];
+
+        $mensagem = view('Ordens/ordem_andamento_email', $data);
+
+        $email->setMessage($mensagem);
+
+        $email->send();
+    }
+
     private function finalizaCadastroDaOrdem(object $ordem): void
     {
         $ordemAberta = [
@@ -221,10 +241,13 @@ class Ordens extends BaseController
             'usuario_abertura_id' => usuario_logado()->id
         ];
 
-        $this->ordemReponsavelModel->insert($ordemAberta);
-        $ordem->cliente = $this->clienteModel->select('nome', 'email')->find($ordem->cliente_id);
+        $ordem->situacao = 'aberta';
+        $ordem->created_at = date('Y-m-d H:i');
 
-        // TODO ENVIAR E-MAIL PARA CLIENTE COM A ORDEM RECÉM CRIADA
+        $this->ordemReponsavelModel->insert($ordemAberta);
+        $ordem->cliente = $this->clienteModel->select('nome, email')->find($ordem->cliente_id);
+
+        $this->enviaOrdemEmAndamentoParaCliente($ordem);
     }
 
 }
