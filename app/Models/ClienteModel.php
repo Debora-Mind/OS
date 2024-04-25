@@ -70,7 +70,7 @@ class ClienteModel extends Model
 
     public function atualizaEmailUsuario(int $usuario_id, string $email)
     {
-        return $this
+        return $this->skipValidation()
             ->protect(false)
             ->where('usuario_id', $usuario_id)
             ->set('email', $email)
