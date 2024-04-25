@@ -42,7 +42,7 @@
 
                         <hr class="border-secondary">
 
-                        <?php if ($ordem->item === null): ?>
+                        <?php if ($ordem->itens === null): ?>
                             <div class="contributions py-3">
                                 <p class="my-0">Nenhum item foi adicionado à ordem</p>
 
