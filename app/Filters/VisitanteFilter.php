@@ -28,7 +28,7 @@ class VisitanteFilter implements FilterInterface
         $autenticacao = service('autenticacao');
 
         if ($autenticacao->estaLogado()) {
-            return redirect()->back();
+            return redirect()->to(site_url('/'));
         }
     }
 
