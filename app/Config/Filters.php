@@ -83,6 +83,7 @@ class Filters extends BaseConfig
                 'eventos(/*)?',
                 'formaspagamentos(/*)?',
                 'ordens(/*)?',
+                'ordensitens(/*)?',
                 'logout(/*)?',
             ],
         ],

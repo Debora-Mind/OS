@@ -77,4 +77,36 @@ class ItemModel extends Model
         return $codigoInterno;
     }
 
+    public function pesquisaItens(string $term = null): array
+    {
+        if ($term == null){
+            return [];
+        }
+
+        $atributos = [
+            'itens.*',
+            'itens_imagens.imagem',
+        ];
+
+        $itens = $this->select($atributos)
+                      ->like('itens.nome', $term)
+                      ->orLike('itens.codigo_interno', $term)
+                      ->join('itens_imagens', 'itens_imagens.item_id = itens.id', 'left')
+                      ->where('itens.ativo', true)
+                      ->where('deleted_at', null)
+                      ->groupBy('itens.nome')
+                      ->findAll();
+
+        if (empty($itens)) {
+            return [];
+        }
+
+        foreach ($itens as $key => $item) {
+            if ($item->tipo === 'produto' && $item->estoque < 1) {
+                unset($itens[$key]);
+            }
+        }
+
+        return $itens;
+    }
 }

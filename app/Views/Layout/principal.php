@@ -45,7 +45,7 @@
         <div class="container-fluid d-flex align-items-center justify-content-between">
             <div class="navbar-header">
                 <!-- Navbar Header-->
-                <a href="index.html" class="navbar-brand">
+                <a href="<?= site_url('/') ?>" class="navbar-brand">
                     <div class="brand-text brand-big visible text-uppercase">
                         <strong class="text-primary">Dark</strong>
                         <strong>Admin</strong>
@@ -97,8 +97,11 @@
         <span class="heading">Main</span>
         <ul class="list-unstyled">
 
-            <li class="<?= url_is('/') ? 'active' : '' ?>"><a href="<?= site_url('/') ?>"> <i class="icon-home"></i>Home
-                </a></li>
+
+            <li class="<?= url_is('/') ? 'active' : '' ?>"><a href="<?= site_url('/') ?>"> <i
+                            class="icon-home"></i>Home</a></li>
+
+
             <li class="<?= url_is('ordens*') ? 'active' : '' ?>"><a href="<?= site_url('ordens') ?>"> <i
                             class="icon-list"></i>Ordens de serviço </a></li>
             <li class="<?= url_is('itens*') ? 'active' : '' ?>"><a href="<?= site_url('itens') ?>"> <i
@@ -138,6 +141,8 @@
     </nav>
     <!-- Sidebar Navigation end-->
     <div class="page-content">
+        <?php d(usuario_logado()) ?>
+
         <div class="page-header">
             <div class="container-fluid">
                 <h2 class="h5 no-margin-bottom"><?= $titulo ?></h2>
@@ -176,9 +181,9 @@
 
 <!-- Não utilizado no curso -->
 <script src="<?= site_url('recursos/') ?>vendor/jquery.cookie/jquery.cookie.js"></script>
-<script src="<?= site_url('recursos/') ?>vendor/chart.js/Chart.min.js"></script>
+<!--<script src="--><?php //= site_url('recursos/') ?><!--vendor/chart.js/Chart.js"></script>-->
 <script src="<?= site_url('recursos/') ?>vendor/jquery-validation/jquery.validate.min.js"></script>
-<script src="<?= site_url('recursos/') ?>js/charts-home.js"></script>
+<!--<script src="--><?php //= site_url('recursos/') ?><!--js/charts-home.js"></script>-->
 <script src="<?= site_url('recursos/') ?>js/front.js"></script>
 
 <?php if (url_is('eventos*')): ?>
